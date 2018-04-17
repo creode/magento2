@@ -363,7 +363,7 @@ class HttpTest extends \PHPUnit\Framework\TestCase
     {
         $this->_model = $this->getModel();
         $_SERVER['REQUEST_METHOD'] = $httpMethod;
-        $this->assertEquals(true, $this->_model->isSafeMethod());
+        $this->assertEquals(true, $this->_model->IsSafeMethod());
     }
 
     /**
@@ -375,7 +375,7 @@ class HttpTest extends \PHPUnit\Framework\TestCase
     {
         $this->_model = $this->getModel();
         $_SERVER['REQUEST_METHOD'] = $httpMethod;
-        $this->assertEquals(false, $this->_model->isSafeMethod());
+        $this->assertEquals(false, $this->_model->IsSafeMethod());
     }
 
     public function httpSafeMethodProvider()

@@ -183,9 +183,6 @@ class FileManager
             }
 
             foreach ($libDir->read($bundleDir) as $bundleFile) {
-                if (pathinfo($bundleFile, PATHINFO_EXTENSION) !== 'js') {
-                    continue;
-                }
                 $relPath = $libDir->getRelativePath($bundleFile);
                 $bundles[] = $this->assetRepo->createArbitrary($relPath, '');
             }

@@ -156,7 +156,7 @@ class Stock
             $resource = $this->getStockStatusResource();
             $resource->addStockDataToCollection(
                 $collection,
-                !$isShowOutOfStock
+                !$isShowOutOfStock || $collection->getFlag('require_stock_items')
             );
             $collection->setFlag($stockFlag, true);
         }

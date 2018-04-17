@@ -51,9 +51,6 @@ class IndexTest extends \PHPUnit\Framework\TestCase
         $resultPageMock->expects($this->once())
             ->method('addHandle')
             ->with('robots_index_index');
-        $resultPageMock->expects($this->once())
-            ->method('setHeader')
-            ->with('Content-Type', 'text/plain');
 
         $this->resultPageFactory->expects($this->any())
             ->method('create')

@@ -227,7 +227,7 @@ class Rate extends \Magento\Framework\Model\AbstractExtensibleModel implements T
      */
     public function saveTitles($titles = null)
     {
-        if ($titles === null) {
+        if (is_null($titles)) {
             $titles = $this->getTitle();
         }
 
@@ -256,7 +256,7 @@ class Rate extends \Magento\Framework\Model\AbstractExtensibleModel implements T
      */
     public function getTitleModel()
     {
-        if ($this->_titleModel === null) {
+        if (is_null($this->_titleModel)) {
             $this->_titleModel = $this->_titleFactory->create();
         }
         return $this->_titleModel;
@@ -270,7 +270,7 @@ class Rate extends \Magento\Framework\Model\AbstractExtensibleModel implements T
         if ($this->getData(self::KEY_TITLES)) {
             return $this->getData(self::KEY_TITLES);
         }
-        if ($this->_titles === null) {
+        if (is_null($this->_titles)) {
             $this->_titles = $this->getTitleModel()->getCollection()->loadByRateId($this->getId())->getItems();
         }
         return $this->_titles;

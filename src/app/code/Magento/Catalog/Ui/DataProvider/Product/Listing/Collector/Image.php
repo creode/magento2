@@ -11,7 +11,6 @@ use Magento\Catalog\Api\Data\ProductRender\ImageInterface;
 use Magento\Catalog\Api\Data\ProductRender\ImageInterfaceFactory;
 use Magento\Catalog\Api\Data\ProductRenderInterface;
 use Magento\Catalog\Helper\ImageFactory;
-use Magento\Catalog\Model\Product\Image\NotLoadInfoImageException;
 use Magento\Catalog\Ui\DataProvider\Product\ProductRenderCollectorInterface;
 use Magento\Framework\App\State;
 use Magento\Framework\View\DesignInterface;
@@ -103,12 +102,7 @@ class Image implements ProductRenderCollectorInterface
                     [$this, "emulateImageCreating"],
                     [$product, $imageCode, (int) $productRender->getStoreId(), $image]
                 );
-
-            try {
-                $resizedInfo = $helper->getResizedImageInfo();
-            } catch (NotLoadInfoImageException $exception) {
-                $resizedInfo = [$helper->getWidth(), $helper->getHeight()];
-            }
+            $resizedInfo = $helper->getResizedImageInfo();
 
             $image->setCode($imageCode);
             $image->setHeight($helper->getHeight());

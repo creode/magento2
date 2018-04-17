@@ -56,9 +56,7 @@ class StockStatusBaseSelectProcessor implements BaseSelectProcessorInterface
                 ['stock' => $stockStatusTable],
                 sprintf('stock.product_id = %s.entity_id', BaseSelectProcessorInterface::PRODUCT_TABLE_ALIAS),
                 []
-            )
-                ->where('stock.stock_status = ?', Stock::STOCK_IN_STOCK)
-                ->where('stock.website_id = ?', 0);
+            )->where('stock.stock_status = ?', Stock::STOCK_IN_STOCK);
         }
 
         return $select;

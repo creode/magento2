@@ -5,6 +5,7 @@
  */
 namespace Magento\Sales\Block\Adminhtml\Order\Create\Form;
 
+use Magento\Framework\Convert\ConvertArray;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 
 /**

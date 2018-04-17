@@ -38,16 +38,7 @@ define([
         },
 
         /**
-         * @return String
-         */
-        getUrl: function () {
-            return this.registrationUrl;
-        },
-
-        /**
-         * Create new user account.
-         *
-         * @deprecated
+         * Create new user account
          */
         createAccount: function () {
             this.creationStarted(true);

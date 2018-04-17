@@ -42,8 +42,7 @@ class ConfigDataTest extends \PHPUnit\Framework\TestCase
 
         $configData = new ConfigData('testKey');
 
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage($expectedException);
+        $this->expectException('InvalidArgumentException', $expectedException);
         $configData->set($key, 'value');
     }
 

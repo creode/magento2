@@ -69,9 +69,6 @@ class ProductGeneratorTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @magentoDbIsolation disabled
-     */
     public function testProductGeneration()
     {
         $name = 'Simple Product Name';

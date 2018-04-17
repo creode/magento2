@@ -8,15 +8,9 @@
 
 namespace Magento\Catalog\Model\Indexer\Category\Product;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Model\Product;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Query\Generator as QueryGenerator;
-use Magento\Framework\DB\Select;
+use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\EntityManager\MetadataPool;
-use Magento\Store\Model\Store;
-use Magento\Catalog\Model\Indexer\Category\Product\TableMaintainer;
 
 /**
  * Class AbstractAction
@@ -45,28 +39,27 @@ abstract class AbstractAction
 
     /**
      * Suffix for table to show it is temporary
-     * @deprecated
      */
     const TEMPORARY_TABLE_SUFFIX = '_tmp';
 
     /**
      * Cached non anchor categories select by store id
      *
-     * @var Select[]
+     * @var \Magento\Framework\DB\Select[]
      */
     protected $nonAnchorSelects = [];
 
     /**
      * Cached anchor categories select by store id
      *
-     * @var Select[]
+     * @var \Magento\Framework\DB\Select[]
      */
     protected $anchorSelects = [];
 
     /**
      * Cached all product select by store id
      *
-     * @var Select[]
+     * @var \Magento\Framework\DB\Select[]
      */
     protected $productsSelects = [];
 
@@ -111,11 +104,6 @@ abstract class AbstractAction
     protected $metadataPool;
 
     /**
-     * @var TableMaintainer
-     */
-    protected $tableMaintainer;
-
-    /**
      * @var string
      * @since 101.0.0
      */
@@ -131,24 +119,19 @@ abstract class AbstractAction
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Model\Config $config
      * @param QueryGenerator $queryGenerator
-     * @param MetadataPool|null $metadataPool
-     * @param TableMaintainer|null $tableMaintainer
      */
     public function __construct(
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Catalog\Model\Config $config,
-        QueryGenerator $queryGenerator = null,
-        MetadataPool $metadataPool = null,
-        TableMaintainer $tableMaintainer = null
+        QueryGenerator $queryGenerator = null
     ) {
         $this->resource = $resource;
         $this->connection = $resource->getConnection();
         $this->storeManager = $storeManager;
         $this->config = $config;
-        $this->queryGenerator = $queryGenerator ?: ObjectManager::getInstance()->get(QueryGenerator::class);
-        $this->metadataPool = $metadataPool ?: ObjectManager::getInstance()->get(MetadataPool::class);
-        $this->tableMaintainer = $tableMaintainer ?: ObjectManager::getInstance()->get(TableMaintainer::class);
+        $this->queryGenerator = $queryGenerator ?: \Magento\Framework\App\ObjectManager::getInstance()
+            ->get(QueryGenerator::class);
     }
 
     /**
@@ -192,7 +175,6 @@ abstract class AbstractAction
      * The name is switched between 'catalog_category_product_index' and 'catalog_category_product_index_replica'
      *
      * @return string
-     * @deprecated
      */
     protected function getMainTable()
     {
@@ -203,26 +185,12 @@ abstract class AbstractAction
      * Return temporary index table name
      *
      * @return string
-     * @deprecated
      */
     protected function getMainTmpTable()
     {
-        return $this->useTempTable
-            ? $this->getTable(self::MAIN_INDEX_TABLE . self::TEMPORARY_TABLE_SUFFIX)
-            : $this->getMainTable();
-    }
-
-    /**
-     * Return index table name
-     *
-     * @param int $storeId
-     * @return string
-     */
-    protected function getIndexTable($storeId)
-    {
-        return $this->useTempTable
-            ? $this->tableMaintainer->getMainReplicaTable($storeId)
-            : $this->tableMaintainer->getMainTable($storeId);
+        return $this->useTempTable ? $this->getTable(
+            self::MAIN_INDEX_TABLE . self::TEMPORARY_TABLE_SUFFIX
+        ) : $this->getMainTable();
     }
 
     /**
@@ -250,25 +218,24 @@ abstract class AbstractAction
     /**
      * Retrieve select for reindex products of non anchor categories
      *
-     * @param Store $store
-     * @return Select
-     * @throws \Exception when metadata not found for ProductInterface
+     * @param \Magento\Store\Model\Store $store
+     * @return \Magento\Framework\DB\Select
      */
-    protected function getNonAnchorCategoriesSelect(Store $store)
+    protected function getNonAnchorCategoriesSelect(\Magento\Store\Model\Store $store)
     {
         if (!isset($this->nonAnchorSelects[$store->getId()])) {
             $statusAttributeId = $this->config->getAttribute(
-                Product::ENTITY,
+                \Magento\Catalog\Model\Product::ENTITY,
                 'status'
             )->getId();
             $visibilityAttributeId = $this->config->getAttribute(
-                Product::ENTITY,
+                \Magento\Catalog\Model\Product::ENTITY,
                 'visibility'
             )->getId();
 
             $rootPath = $this->getPathFromCategoryId($store->getRootCategoryId());
 
-            $metadata = $this->metadataPool->getMetadata(ProductInterface::class);
+            $metadata = $this->getMetadataPool()->getMetadata(\Magento\Catalog\Api\Data\ProductInterface::class);
             $linkField = $metadata->getLinkField();
             $select = $this->connection->select()->from(
                 ['cc' => $this->getTable('catalog_category_entity')],
@@ -337,63 +304,10 @@ abstract class AbstractAction
                 ]
             );
 
-            $this->addFilteringByChildProductsToSelect($select, $store);
-
             $this->nonAnchorSelects[$store->getId()] = $select;
         }
 
         return $this->nonAnchorSelects[$store->getId()];
-    }
-
-    /**
-     * Add filtering by child products to select
-     *
-     * It's used for correct handling of composite products.
-     * This method makes assumption that select already joins `catalog_product_entity` as `cpe`.
-     *
-     * @param Select $select
-     * @param Store $store
-     * @return void
-     * @throws \Exception when metadata not found for ProductInterface
-     */
-    private function addFilteringByChildProductsToSelect(Select $select, Store $store)
-    {
-        $metadata = $this->metadataPool->getMetadata(ProductInterface::class);
-        $linkField = $metadata->getLinkField();
-
-        $statusAttributeId = $this->config->getAttribute(Product::ENTITY, 'status')->getId();
-
-        $select->joinLeft(
-            ['relation' => $this->getTable('catalog_product_relation')],
-            'cpe.' . $linkField . ' = relation.parent_id',
-            []
-        )->joinLeft(
-            ['relation_product_entity' => $this->getTable('catalog_product_entity')],
-            'relation.child_id = relation_product_entity.entity_id',
-            []
-        )->joinLeft(
-            ['child_cpsd' => $this->getTable('catalog_product_entity_int')],
-            'child_cpsd.' . $linkField . ' = '. 'relation_product_entity.' . $linkField
-            . ' AND child_cpsd.store_id = 0'
-            . ' AND child_cpsd.attribute_id = ' . $statusAttributeId,
-            []
-        )->joinLeft(
-            ['child_cpss' => $this->getTable('catalog_product_entity_int')],
-            'child_cpss.' . $linkField . ' = '. 'relation_product_entity.' . $linkField . ''
-            . ' AND child_cpss.attribute_id = child_cpsd.attribute_id'
-            . ' AND child_cpss.store_id = ' . $store->getId(),
-            []
-        )->where(
-            'relation.child_id IS NULL OR '
-            . $this->connection->getIfNullSql('child_cpss.value', 'child_cpsd.value') . ' = ?',
-            \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED
-        )->group(
-            [
-                'cc.entity_id',
-                'ccp.product_id',
-                'visibility'
-            ]
-        );
     }
 
     /**
@@ -409,13 +323,16 @@ abstract class AbstractAction
     /**
      * Return selects cut by min and max
      *
-     * @param Select $select
+     * @param \Magento\Framework\DB\Select $select
      * @param string $field
      * @param int $range
-     * @return Select[]
+     * @return \Magento\Framework\DB\Select[]
      */
-    protected function prepareSelectsByRange(Select $select, $field, $range = self::RANGE_CATEGORY_STEP)
-    {
+    protected function prepareSelectsByRange(
+        \Magento\Framework\DB\Select $select,
+        $field,
+        $range = self::RANGE_CATEGORY_STEP
+    ) {
         if ($this->isRangingNeeded()) {
             $iterator = $this->queryGenerator->generate(
                 $field,
@@ -436,17 +353,17 @@ abstract class AbstractAction
     /**
      * Reindex products of non anchor categories
      *
-     * @param Store $store
+     * @param \Magento\Store\Model\Store $store
      * @return void
      */
-    protected function reindexNonAnchorCategories(Store $store)
+    protected function reindexNonAnchorCategories(\Magento\Store\Model\Store $store)
     {
         $selects = $this->prepareSelectsByRange($this->getNonAnchorCategoriesSelect($store), 'entity_id');
         foreach ($selects as $select) {
             $this->connection->query(
                 $this->connection->insertFromSelect(
                     $select,
-                    $this->getIndexTable($store->getId()),
+                    $this->getMainTmpTable(),
                     ['category_id', 'product_id', 'position', 'is_parent', 'store_id', 'visibility'],
                     \Magento\Framework\DB\Adapter\AdapterInterface::INSERT_ON_DUPLICATE
                 )
@@ -457,10 +374,10 @@ abstract class AbstractAction
     /**
      * Check if anchor select isset
      *
-     * @param Store $store
+     * @param \Magento\Store\Model\Store $store
      * @return bool
      */
-    protected function hasAnchorSelect(Store $store)
+    protected function hasAnchorSelect(\Magento\Store\Model\Store $store)
     {
         return isset($this->anchorSelects[$store->getId()]);
     }
@@ -468,20 +385,19 @@ abstract class AbstractAction
     /**
      * Create anchor select
      *
-     * @param Store $store
-     * @return Select
-     * @throws \Exception when metadata not found for ProductInterface or CategoryInterface
+     * @param \Magento\Store\Model\Store $store
+     * @return \Magento\Framework\DB\Select
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
-    protected function createAnchorSelect(Store $store)
+    protected function createAnchorSelect(\Magento\Store\Model\Store $store)
     {
         $isAnchorAttributeId = $this->config->getAttribute(
             \Magento\Catalog\Model\Category::ENTITY,
             'is_anchor'
         )->getId();
-        $statusAttributeId = $this->config->getAttribute(Product::ENTITY, 'status')->getId();
+        $statusAttributeId = $this->config->getAttribute(\Magento\Catalog\Model\Product::ENTITY, 'status')->getId();
         $visibilityAttributeId = $this->config->getAttribute(
-            Product::ENTITY,
+            \Magento\Catalog\Model\Product::ENTITY,
             'visibility'
         )->getId();
         $rootCatIds = explode('/', $this->getPathFromCategoryId($store->getRootCategoryId()));
@@ -489,12 +405,12 @@ abstract class AbstractAction
 
         $temporaryTreeTable = $this->makeTempCategoryTreeIndex();
 
-        $productMetadata = $this->metadataPool->getMetadata(ProductInterface::class);
-        $categoryMetadata = $this->metadataPool->getMetadata(\Magento\Catalog\Api\Data\CategoryInterface::class);
+        $productMetadata = $this->getMetadataPool()->getMetadata(\Magento\Catalog\Api\Data\ProductInterface::class);
+        $categoryMetadata = $this->getMetadataPool()->getMetadata(\Magento\Catalog\Api\Data\CategoryInterface::class);
         $productLinkField = $productMetadata->getLinkField();
         $categoryLinkField = $categoryMetadata->getLinkField();
 
-        $select = $this->connection->select()->from(
+        return $this->connection->select()->from(
             ['cc' => $this->getTable('catalog_category_entity')],
             []
         )->joinInner(
@@ -576,10 +492,6 @@ abstract class AbstractAction
                 'visibility' => new \Zend_Db_Expr($this->connection->getIfNullSql('cpvs.value', 'cpvd.value')),
             ]
         );
-
-        $this->addFilteringByChildProductsToSelect($select, $store);
-
-        return $select;
     }
 
     /**
@@ -633,12 +545,6 @@ abstract class AbstractAction
             ['type' => \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_PRIMARY]
         );
 
-        $temporaryTable->addIndex(
-            'child_id',
-            ['child_id'],
-            ['type' => \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_INDEX]
-        );
-
         // Drop the temporary table in case it already exists on this (persistent?) connection.
         $this->connection->dropTemporaryTable($temporaryName);
         $this->connection->createTemporaryTable($temporaryTable);
@@ -680,10 +586,10 @@ abstract class AbstractAction
     /**
      * Retrieve select for reindex products of non anchor categories
      *
-     * @param Store $store
-     * @return Select
+     * @param \Magento\Store\Model\Store $store
+     * @return \Magento\Framework\DB\Select
      */
-    protected function getAnchorCategoriesSelect(Store $store)
+    protected function getAnchorCategoriesSelect(\Magento\Store\Model\Store $store)
     {
         if (!$this->hasAnchorSelect($store)) {
             $this->anchorSelects[$store->getId()] = $this->createAnchorSelect($store);
@@ -694,10 +600,10 @@ abstract class AbstractAction
     /**
      * Reindex products of anchor categories
      *
-     * @param Store $store
+     * @param \Magento\Store\Model\Store $store
      * @return void
      */
-    protected function reindexAnchorCategories(Store $store)
+    protected function reindexAnchorCategories(\Magento\Store\Model\Store $store)
     {
         $selects = $this->prepareSelectsByRange($this->getAnchorCategoriesSelect($store), 'entity_id');
 
@@ -705,7 +611,7 @@ abstract class AbstractAction
             $this->connection->query(
                 $this->connection->insertFromSelect(
                     $select,
-                    $this->getIndexTable($store->getId()),
+                    $this->getMainTmpTable(),
                     ['category_id', 'product_id', 'position', 'is_parent', 'store_id', 'visibility'],
                     \Magento\Framework\DB\Adapter\AdapterInterface::INSERT_ON_DUPLICATE
                 )
@@ -716,23 +622,22 @@ abstract class AbstractAction
     /**
      * Get select for all products
      *
-     * @param Store $store
-     * @return Select
-     * @throws \Exception when metadata not found for ProductInterface
+     * @param \Magento\Store\Model\Store $store
+     * @return \Magento\Framework\DB\Select
      */
-    protected function getAllProducts(Store $store)
+    protected function getAllProducts(\Magento\Store\Model\Store $store)
     {
         if (!isset($this->productsSelects[$store->getId()])) {
             $statusAttributeId = $this->config->getAttribute(
-                Product::ENTITY,
+                \Magento\Catalog\Model\Product::ENTITY,
                 'status'
             )->getId();
             $visibilityAttributeId = $this->config->getAttribute(
-                Product::ENTITY,
+                \Magento\Catalog\Model\Product::ENTITY,
                 'visibility'
             )->getId();
 
-            $metadata = $this->metadataPool->getMetadata(ProductInterface::class);
+            $metadata = $this->getMetadataPool()->getMetadata(\Magento\Catalog\Api\Data\ProductInterface::class);
             $linkField = $metadata->getLinkField();
 
             $select = $this->connection->select()->from(
@@ -821,10 +726,10 @@ abstract class AbstractAction
     /**
      * Reindex all products to root category
      *
-     * @param Store $store
+     * @param \Magento\Store\Model\Store $store
      * @return void
      */
-    protected function reindexRootCategory(Store $store)
+    protected function reindexRootCategory(\Magento\Store\Model\Store $store)
     {
         if ($this->isIndexRootCategoryNeeded()) {
             $selects = $this->prepareSelectsByRange(
@@ -837,12 +742,24 @@ abstract class AbstractAction
                 $this->connection->query(
                     $this->connection->insertFromSelect(
                         $select,
-                        $this->getIndexTable($store->getId()),
+                        $this->getMainTmpTable(),
                         ['category_id', 'product_id', 'position', 'is_parent', 'store_id', 'visibility'],
                         \Magento\Framework\DB\Adapter\AdapterInterface::INSERT_ON_DUPLICATE
                     )
                 );
             }
         }
+    }
+
+    /**
+     * @return \Magento\Framework\EntityManager\MetadataPool
+     */
+    private function getMetadataPool()
+    {
+        if (null === $this->metadataPool) {
+            $this->metadataPool = \Magento\Framework\App\ObjectManager::getInstance()
+                ->get(\Magento\Framework\EntityManager\MetadataPool::class);
+        }
+        return $this->metadataPool;
     }
 }

@@ -82,7 +82,7 @@ class Filters extends AbstractComponent implements ObserverInterface
                 return;
             }
 
-            if (isset($this->filterMap[$filterType]) && !isset($this->columnFilters[$component->getName()])) {
+            if (isset($this->filterMap[$filterType])) {
                 $filterComponent = $this->uiComponentFactory->create(
                     $component->getName(),
                     $this->filterMap[$filterType],

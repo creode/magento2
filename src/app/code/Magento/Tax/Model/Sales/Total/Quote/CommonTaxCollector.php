@@ -771,7 +771,7 @@ class CommonTaxCollector extends AbstractTotal
                 $previouslyAppliedTaxes[$row['id']] = $row;
             }
 
-            if ($row['percent'] !== null) {
+            if (!is_null($row['percent'])) {
                 $row['percent'] = $row['percent'] ? $row['percent'] : 1;
                 $rate = $rate ? $rate : 1;
 

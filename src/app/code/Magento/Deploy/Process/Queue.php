@@ -161,7 +161,7 @@ class Queue
             foreach ($packages as $name => $packageJob) {
                 $this->assertAndExecute($name, $packages, $packageJob);
             }
-            $this->logger->info('.');
+            $this->logger->notice('.');
             sleep(3);
             foreach ($this->inProgress as $name => $package) {
                 if ($this->isDeployed($package)) {
@@ -182,39 +182,20 @@ class Queue
      * @param array $packages
      * @param array $packageJob
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     private function assertAndExecute($name, array & $packages, array $packageJob)
     {
         /** @var Package $package */
         $package = $packageJob['package'];
-        $dependenciesNotFinished = false;
         if ($package->getParent() && $package->getParent() !== $package) {
             foreach ($packageJob['dependencies'] as $dependencyName => $dependency) {
                 if (!$this->isDeployed($dependency)) {
-                    //If it's not present in $packages then it's already
-                    //in progress so just waiting...
-                    if (!array_key_exists($dependencyName, $packages)) {
-                        $dependenciesNotFinished = true;
-                    } else {
-                        $this->assertAndExecute(
-                            $dependencyName,
-                            $packages,
-                            $packages[$dependencyName]
-                        );
-                    }
+                    $this->assertAndExecute($dependencyName, $packages, $packages[$dependencyName]);
                 }
             }
         }
-
-        if (!$dependenciesNotFinished
-            && !$this->isDeployed($package)
-            && (
-                $this->maxProcesses < 2
-                || (count($this->inProgress) < $this->maxProcesses)
-            )
-        ) {
+        if (!$this->isDeployed($package)
+            && ($this->maxProcesses < 2 || (count($this->inProgress) < $this->maxProcesses))) {
             unset($packages[$name]);
             $this->execute($package);
         }
@@ -233,7 +214,7 @@ class Queue
                     unset($this->inProgress[$name]);
                 }
             }
-            $this->logger->info('.');
+            $this->logger->notice('.');
             sleep(5);
         }
         if ($this->isCanBeParalleled()) {

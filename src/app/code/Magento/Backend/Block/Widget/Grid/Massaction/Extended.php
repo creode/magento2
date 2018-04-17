@@ -218,8 +218,9 @@ class Extended extends \Magento\Backend\Block\Widget
         if ($selected = $this->getRequest()->getParam($this->getFormFieldNameInternal())) {
             $selected = explode(',', $selected);
             return join(',', $selected);
+        } else {
+            return '';
         }
-        return '';
     }
 
     /**
@@ -232,8 +233,9 @@ class Extended extends \Magento\Backend\Block\Widget
         if ($selected = $this->getRequest()->getParam($this->getFormFieldNameInternal())) {
             $selected = explode(',', $selected);
             return $selected;
+        } else {
+            return [];
         }
-        return [];
     }
 
     /**

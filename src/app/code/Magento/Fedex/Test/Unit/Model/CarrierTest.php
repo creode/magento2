@@ -16,7 +16,6 @@ use Magento\Fedex\Model\Carrier;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Module\Dir\Reader;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
-use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Framework\Xml\Security;
 use Magento\Quote\Model\Quote\Address\RateRequest;
@@ -88,17 +87,12 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
     /**
      * @var \SoapClient|MockObject
      */
-    private $soapClient;
+    private $soapClientMock;
 
     /**
-     * @var Json|MockObject
+     * @var \Magento\Framework\Serialize\Serializer\Json|MockObject
      */
     private $serializer;
-
-    /**
-     * @var LoggerInterface|MockObject
-     */
-    private $logger;
 
     protected function setUp()
     {
@@ -157,11 +151,9 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->serializer = $this->getMockBuilder(Json::class)
+        $this->serializer = $this->getMockBuilder(\Magento\Framework\Serialize\Serializer\Json::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->logger = $this->getMockForAbstractClass(LoggerInterface::class);
 
         $this->carrier = $this->getMockBuilder(Carrier::class)
             ->setMethods(['_createSoapClient'])
@@ -169,7 +161,7 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
                 [
                     'scopeConfig' => $this->scope,
                     'rateErrorFactory' => $this->errorFactory,
-                    'logger' => $this->logger,
+                    'logger' => $this->createMock(LoggerInterface::class),
                     'xmlSecurity' => new Security(),
                     'xmlElFactory' => $elementFactory,
                     'rateFactory' => $rateFactory,
@@ -189,12 +181,12 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
                     'serializer' => $this->serializer,
                 ]
             )->getMock();
-        $this->soapClient = $this->getMockBuilder(\SoapClient::class)
+        $this->soapClientMock = $this->getMockBuilder(\SoapClient::class)
             ->disableOriginalConstructor()
             ->setMethods(['getRates', 'track'])
             ->getMock();
         $this->carrier->method('_createSoapClient')
-            ->willReturn($this->soapClient);
+            ->willReturn($this->soapClientMock);
     }
 
     public function testSetRequestWithoutCity()
@@ -222,19 +214,21 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Callback function, emulates getValue function.
-     *
-     * @param string $path
-     * @return string|null
+     * Callback function, emulates getValue function
+     * @param $path
+     * @return null|string
      */
-    public function scopeConfigGetValue(string $path)
+    public function scopeConfigGetValue($path)
     {
-        $pathMap = [
-            'carriers/fedex/showmethod' => 1,
-            'carriers/fedex/allowed_methods' => 'ServiceType',
-            'carriers/fedex/debug' => 1
-        ];
-        return isset($pathMap[$path]) ? $pathMap[$path] : null;
+        switch ($path) {
+            case 'carriers/fedex/showmethod':
+                return 1;
+                break;
+            case 'carriers/fedex/allowed_methods':
+                return 'ServiceType';
+                break;
+        }
+        return null;
     }
 
     /**
@@ -277,7 +271,7 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->soapClient->expects($this->exactly($callNum))
+        $this->soapClientMock->expects($this->exactly($callNum))
             ->method('getRates')
             ->willReturn($response);
 
@@ -453,7 +447,7 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
         $response->CompletedTrackDetails->TrackDetails = [$trackDetails];
         // @codingStandardsIgnoreEnd
 
-        $this->soapClient->expects($this->exactly($callNum))
+        $this->soapClientMock->expects($this->exactly($callNum))
             ->method('track')
             ->willReturn($response);
 
@@ -576,7 +570,7 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
         $response->CompletedTrackDetails->TrackDetails = $trackDetails;
         // @codingStandardsIgnoreEnd
 
-        $this->soapClient->expects($this->exactly($callNum))
+        $this->soapClientMock->expects($this->exactly($callNum))
             ->method('track')
             ->willReturn($response);
 

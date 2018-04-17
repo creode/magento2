@@ -13,7 +13,7 @@ class InlineTest extends \PHPUnit\Framework\TestCase
     protected $translator;
 
     /**
-     * @var \Magento\Framework\Phrase\Renderer\Inline
+     * @var \Magento\Framework\Phrase\Renderer\Translate
      */
     protected $renderer;
 
@@ -88,8 +88,7 @@ class InlineTest extends \PHPUnit\Framework\TestCase
             ->method('get')
             ->willThrowException($exception);
 
-        $this->expectException('Exception');
-        $this->expectExceptionMessage($message);
+        $this->expectException('Exception', $message);
         $this->renderer->render(['text'], []);
     }
 }

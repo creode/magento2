@@ -74,12 +74,10 @@ class SortingProcessor implements CollectionProcessorInterface
         /** @var SortOrder $sortOrder */
         foreach ($sortOrders as $sortOrder) {
             $field = $this->getFieldMapping($sortOrder->getField());
-            if (null !== $field) {
-                $order = $sortOrder->getDirection() == SortOrder::SORT_ASC
-                    ? Collection::SORT_ORDER_ASC
-                    : Collection::SORT_ORDER_DESC;
-                $collection->addOrder($field, $order);
-            }
+            $order = $sortOrder->getDirection() == SortOrder::SORT_ASC
+                ? Collection::SORT_ORDER_ASC
+                : Collection::SORT_ORDER_DESC;
+            $collection->addOrder($field, $order);
         }
     }
 

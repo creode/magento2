@@ -181,7 +181,6 @@ class BackupRollbackTest extends \PHPUnit\Framework\TestCase
     public function testDbBackup()
     {
         $this->setupDbBackupRollback();
-        $this->database->expects($this->once())->method('getBackupFilename')->willReturn('RollbackFile_A.gz');
         $this->database->expects($this->once())->method('create');
         $this->file->expects($this->once())->method('isExists')->willReturn(false);
         $this->file->expects($this->once())->method('createDirectory');
@@ -191,20 +190,12 @@ class BackupRollbackTest extends \PHPUnit\Framework\TestCase
     public function testDbRollback()
     {
         $this->setupDbBackupRollback();
-
         $this->database->expects($this->once())->method('rollback');
-        $this->database->expects($this->exactly(2))->method('getBackupFilename')
-            ->willReturnOnConsecutiveCalls('test', '1510140748_db_test_backup');
-        $this->database->expects($this->once())->method('getTime')->willReturn(1510140748);
-        $this->database->expects($this->once())->method('getType')->willReturn('db');
-        $this->database->expects($this->once())->method('setName')->with(' test backup');
-
         $this->file->expects($this->once())
             ->method('isExists')
-            ->with($this->path . '/backups/1510140748_db_test_backup.sql')
+            ->with($this->path . '/backups/12345_db.sql')
             ->willReturn(true);
-
-        $this->model->dbRollback('1510140748_db_test_backup.sql');
+        $this->model->dbRollback('12345_db.sql');
     }
 
     private function setupCodeBackupRollback()
@@ -235,6 +226,9 @@ class BackupRollbackTest extends \PHPUnit\Framework\TestCase
             ->method('setBackupExtension');
         $this->database->expects($this->once())
             ->method('setTime');
+        $this->database->expects($this->once())
+            ->method('getBackupFilename')
+            ->willReturn('RollbackFile_A.gz');
         $this->database->expects($this->atLeastOnce())
             ->method('getBackupPath')
             ->willReturn('pathToFile/12345_db.sql');

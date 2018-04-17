@@ -29,8 +29,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
      */
     public function testConstructorException(array $configData, $expectedException)
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage($expectedException);
+        $this->expectException('InvalidArgumentException', $expectedException);
         new \Magento\Directory\Model\Currency\Import\Config($configData);
     }
 

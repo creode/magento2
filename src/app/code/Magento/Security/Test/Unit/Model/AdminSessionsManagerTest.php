@@ -99,8 +99,7 @@ class AdminSessionsManagerTest extends \PHPUnit\Framework\TestCase
                 'setIsOtherSessionsTerminated',
                 'save',
                 'getUserId',
-                'getSessionId',
-                'getUpdatedAt'
+                'getSessionId'
             ]);
 
         $this->securityConfigMock = $this->getMockBuilder(\Magento\Security\Model\ConfigInterface::class)
@@ -217,8 +216,7 @@ class AdminSessionsManagerTest extends \PHPUnit\Framework\TestCase
     public function testProcessProlong()
     {
         $sessionId = 50;
-        $lastUpdatedAt = '2015-12-31 23:59:59';
-        $newUpdatedAt = '2016-01-01 00:00:30';
+        $updatedAt = '2015-12-31 23:59:59';
 
         $this->adminSessionInfoFactoryMock->expects($this->any())
             ->method('create')
@@ -232,21 +230,13 @@ class AdminSessionsManagerTest extends \PHPUnit\Framework\TestCase
             ->method('load')
             ->willReturnSelf();
 
-        $this->currentSessionMock->expects($this->once())
+        $this->authSessionMock->expects($this->once())
             ->method('getUpdatedAt')
-            ->willReturn($lastUpdatedAt);
-
-        $this->authSessionMock->expects($this->exactly(2))
-            ->method('getUpdatedAt')
-            ->willReturn(strtotime($newUpdatedAt));
-
-        $this->securityConfigMock->expects($this->once())
-            ->method('getAdminSessionLifetime')
-            ->willReturn(100);
+            ->willReturn($updatedAt);
 
         $this->currentSessionMock->expects($this->once())
             ->method('setData')
-            ->with('updated_at', $newUpdatedAt)
+            ->with('updated_at', $updatedAt)
             ->willReturnSelf();
 
         $this->currentSessionMock->expects($this->once())

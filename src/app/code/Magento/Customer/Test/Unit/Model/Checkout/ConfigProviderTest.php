@@ -41,11 +41,6 @@ class ConfigProviderTest extends \PHPUnit\Framework\TestCase
      */
     protected $store;
 
-    /**
-     * @var Url|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $customerUrl;
-
     protected function setUp()
     {
         $this->storeManager = $this->getMockForAbstractClass(
@@ -54,14 +49,12 @@ class ConfigProviderTest extends \PHPUnit\Framework\TestCase
             '',
             false
         );
-
         $this->urlBuilder = $this->getMockForAbstractClass(
             \Magento\Framework\UrlInterface::class,
             [],
             '',
             false
         );
-
         $this->scopeConfig = $this->getMockForAbstractClass(
             \Magento\Framework\App\Config\ScopeConfigInterface::class,
             [],
@@ -78,13 +71,10 @@ class ConfigProviderTest extends \PHPUnit\Framework\TestCase
             ['getBaseUrl']
         );
 
-        $this->customerUrl = $this->createMock(\Magento\Customer\Model\Url::class);
-
         $this->provider = new ConfigProvider(
             $this->urlBuilder,
             $this->storeManager,
-            $this->scopeConfig,
-            $this->customerUrl
+            $this->scopeConfig
         );
     }
 
@@ -93,8 +83,9 @@ class ConfigProviderTest extends \PHPUnit\Framework\TestCase
         $loginUrl = 'http://url.test/customer/login';
         $baseUrl = 'http://base-url.test';
 
-        $this->customerUrl->expects($this->exactly(2))
-            ->method('getLoginUrl')
+        $this->urlBuilder->expects($this->exactly(2))
+            ->method('getUrl')
+            ->with(Url::ROUTE_ACCOUNT_LOGIN)
             ->willReturn($loginUrl);
         $this->storeManager->expects($this->once())
             ->method('getStore')
@@ -121,8 +112,9 @@ class ConfigProviderTest extends \PHPUnit\Framework\TestCase
         $loginUrl = 'http://base-url.test/customer/login';
         $baseUrl = 'http://base-url.test';
 
-        $this->customerUrl->expects($this->exactly(2))
-            ->method('getLoginUrl')
+        $this->urlBuilder->expects($this->exactly(2))
+            ->method('getUrl')
+            ->with(Url::ROUTE_ACCOUNT_LOGIN)
             ->willReturn($loginUrl);
         $this->storeManager->expects($this->once())
             ->method('getStore')

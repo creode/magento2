@@ -84,7 +84,6 @@ class StockItemTest extends \PHPUnit\Framework\TestCase
                     'setMessage',
                     'setBackorders',
                     '__wakeup',
-                    'setStockStateResult'
                 ]
             )
             ->disableOriginalConstructor()
@@ -179,7 +178,6 @@ class StockItemTest extends \PHPUnit\Framework\TestCase
         $quoteItem->expects($this->once())->method('setMessage')->with('message')->will($this->returnSelf());
         $result->expects($this->exactly(2))->method('getItemBackorders')->will($this->returnValue('backorders'));
         $quoteItem->expects($this->once())->method('setBackorders')->with('backorders')->will($this->returnSelf());
-        $quoteItem->expects($this->once())->method('setStockStateResult')->with($result)->will($this->returnSelf());
 
         $this->model->initialize($stockItem, $quoteItem, $qty);
     }

@@ -8,14 +8,12 @@
 
 namespace Magento\Payment\Model\Method;
 
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Payment\Model\MethodInterface;
 use Magento\Payment\Observer\AbstractDataAssignObserver;
 use Magento\Quote\Api\Data\PaymentMethodInterface;
 use Magento\Sales\Model\Order\Payment;
-use Magento\Directory\Helper\Data as DirectoryHelper;
 
 /**
  * Payment method abstract model
@@ -222,11 +220,6 @@ abstract class AbstractMethod extends \Magento\Framework\Model\AbstractExtensibl
     protected $logger;
 
     /**
-     * @var DirectoryHelper
-     */
-    private $directory;
-
-    /**
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
@@ -237,7 +230,6 @@ abstract class AbstractMethod extends \Magento\Framework\Model\AbstractExtensibl
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
      * @param array $data
-     * @param DirectoryHelper $directory
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -250,8 +242,7 @@ abstract class AbstractMethod extends \Magento\Framework\Model\AbstractExtensibl
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = [],
-        DirectoryHelper $directory = null
+        array $data = []
     ) {
         parent::__construct(
             $context,
@@ -265,7 +256,6 @@ abstract class AbstractMethod extends \Magento\Framework\Model\AbstractExtensibl
         $this->_paymentData = $paymentData;
         $this->_scopeConfig = $scopeConfig;
         $this->logger = $logger;
-        $this->directory = $directory ?: ObjectManager::getInstance()->get(DirectoryHelper::class);
         $this->initializeData($data);
     }
 
@@ -615,7 +605,6 @@ abstract class AbstractMethod extends \Magento\Framework\Model\AbstractExtensibl
         } else {
             $billingCountry = $paymentInfo->getQuote()->getBillingAddress()->getCountryId();
         }
-        $billingCountry = $billingCountry ?: $this->directory->getDefaultCountry();
         if (!$this->canUseForCountry($billingCountry)) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('You can\'t use the payment type you selected to make payments to the billing country.')

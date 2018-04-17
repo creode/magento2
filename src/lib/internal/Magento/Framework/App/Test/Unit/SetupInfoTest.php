@@ -24,8 +24,7 @@ class SetupInfoTest extends \PHPUnit\Framework\TestCase
      */
     public function testConstructorExceptions($server, $expectedError)
     {
-        $this->expectException('\InvalidArgumentException');
-        $this->expectExceptionMessage($expectedError);
+        $this->expectException('\InvalidArgumentException', $expectedError);
         new SetupInfo($server);
     }
 

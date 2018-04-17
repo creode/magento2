@@ -6,15 +6,12 @@
 namespace Magento\Sitemap\Model\ResourceModel\Cms;
 
 use Magento\Cms\Api\Data\PageInterface;
-use Magento\Cms\Api\GetUtilityPageIdentifiersInterface;
+use Magento\Framework\EntityManager\MetadataPool;
+use Magento\Framework\Model\ResourceModel\Db\Context;
+use Magento\Framework\Model\AbstractModel;
 use Magento\Cms\Model\Page as CmsPage;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DB\Select;
 use Magento\Framework\EntityManager\EntityManager;
-use Magento\Framework\EntityManager\MetadataPool;
-use Magento\Framework\Model\AbstractModel;
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Magento\Framework\Model\ResourceModel\Db\Context;
 
 /**
  * Sitemap cms page collection model
@@ -22,7 +19,7 @@ use Magento\Framework\Model\ResourceModel\Db\Context;
  * @api
  * @since 100.0.2
  */
-class Page extends AbstractDb
+class Page extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
      * @var MetadataPool
@@ -37,29 +34,19 @@ class Page extends AbstractDb
     protected $entityManager;
 
     /**
-     * @var GetUtilityPageIdentifiersInterface
-     * @since 100.2.0
-     */
-    private $getUtilityPageIdentifiers;
-
-    /**
-     * @param Context                            $context
-     * @param MetadataPool                       $metadataPool
-     * @param EntityManager                      $entityManager
-     * @param string                             $connectionName
-     * @param GetUtilityPageIdentifiersInterface $getUtilityPageIdentifiers
+     * @param Context $context
+     * @param MetadataPool $metadataPool
+     * @param EntityManager $entityManager
+     * @param string $connectionName
      */
     public function __construct(
         Context $context,
         MetadataPool $metadataPool,
         EntityManager $entityManager,
-        $connectionName = null,
-        GetUtilityPageIdentifiersInterface $getUtilityPageIdentifiers = null
+        $connectionName = null
     ) {
-        $this->metadataPool      = $metadataPool;
-        $this->entityManager     = $entityManager;
-        $this->getUtilityPageIdentifiers = $getUtilityPageIdentifiers ?:
-            ObjectManager::getInstance()->get(GetUtilityPageIdentifiersInterface::class);
+        $this->metadataPool = $metadataPool;
+        $this->entityManager = $entityManager;
         parent::__construct($context, $connectionName);
     }
 
@@ -103,8 +90,8 @@ class Page extends AbstractDb
         )->where(
             'main_table.is_active = 1'
         )->where(
-            'main_table.identifier NOT IN (?)',
-            $this->getUtilityPageIdentifiers->execute()
+            'main_table.identifier != ?',
+            \Magento\Cms\Model\Page::NOROUTE_PAGE_ID
         )->where(
             'store_table.store_id IN(?)',
             [0, $storeId]

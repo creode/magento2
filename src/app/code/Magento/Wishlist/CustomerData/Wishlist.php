@@ -5,7 +5,6 @@
  */
 namespace Magento\Wishlist\CustomerData;
 
-use Magento\Catalog\Model\Product\Image\NotLoadInfoImageException;
 use Magento\Customer\CustomerData\SectionSourceInterface;
 
 /**
@@ -155,19 +154,15 @@ class Wishlist implements SectionSourceInterface
             ? 'Magento_Catalog/product/image'
             : 'Magento_Catalog/product/image_with_borders';
 
-        try {
-            $imagesize = $helper->getResizedImageInfo();
-        } catch (NotLoadInfoImageException $exception) {
-            $imagesize = [$helper->getWidth(), $helper->getHeight()];
-        }
+        $imagesize = $helper->getResizedImageInfo();
 
         $width = $helper->getFrame()
             ? $helper->getWidth()
-            : $imagesize[0];
+            : (!empty($imagesize[0]) ? $imagesize[0] : $helper->getWidth());
 
         $height = $helper->getFrame()
             ? $helper->getHeight()
-            : $imagesize[1];
+            : (!empty($imagesize[1]) ? $imagesize[1] : $helper->getHeight());
 
         return [
             'template' => $template,

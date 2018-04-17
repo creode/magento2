@@ -183,11 +183,11 @@ class UserTest extends \PHPUnit\Framework\TestCase
         $this->model->setPassword($password);
         $this->model->setOrigData('password', $origPassword);
 
-        $this->model->setUserName($username);
+        $this->model->setUsername($username);
         $this->model->setOrigData('username', $origUsername);
 
-        $this->model->setFirstName($firstName);
-        $this->model->setLastName($lastName);
+        $this->model->setFirstname($firstName);
+        $this->model->setLastname($lastName);
 
         $this->configMock->expects($this->exactly(4))
             ->method('getValue')
@@ -255,8 +255,8 @@ class UserTest extends \PHPUnit\Framework\TestCase
         $lastName = 'Bar';
 
         $this->model->setEmail($email);
-        $this->model->setFirstName($firstName);
-        $this->model->setLastName($lastName);
+        $this->model->setFirstname($firstName);
+        $this->model->setLastname($lastName);
 
         $this->configMock->expects($this->at(0))
             ->method('getValue')

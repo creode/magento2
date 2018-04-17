@@ -147,9 +147,7 @@ class ProductsListTest extends \PHPUnit\Framework\TestCase
         $this->request->expects($this->once())->method('getParam')->with('page_number')->willReturn(1);
 
         $this->request->expects($this->once())->method('getParams')->willReturn('request_params');
-        $currency = $this->createMock(\Magento\Directory\Model\Currency::class);
-        $currency->expects($this->once())->method('getCode')->willReturn('USD');
-        $this->priceCurrency->expects($this->once())->method('getCurrency')->willReturn($currency);
+        $this->priceCurrency->expects($this->once())->method('getCurrencySymbol')->willReturn('$');
 
         $this->serializer->expects($this->any())
             ->method('serialize')
@@ -159,7 +157,7 @@ class ProductsListTest extends \PHPUnit\Framework\TestCase
 
         $cacheKey = [
             'CATALOG_PRODUCTS_LIST_WIDGET',
-            'USD',
+            '$',
             1,
             'blank',
             'context_group',

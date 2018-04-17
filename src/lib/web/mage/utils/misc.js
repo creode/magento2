@@ -243,26 +243,6 @@ define([
         },
 
         /**
-         * Replaces symbol codes with their unescaped counterparts.
-         *
-         * @param {String} data
-         *
-         * @returns {String}
-         */
-        unescape: function (data) {
-            var unescaped = _.unescape(data),
-                mapCharacter = {
-                    '&#039;': '\''
-                };
-
-            _.each(mapCharacter, function (value, key) {
-                unescaped = unescaped.replace(key, value);
-            });
-
-            return unescaped;
-        },
-
-        /**
          * Converts PHP IntlFormatter format to moment format.
          *
          * @param {String} format - PHP format
@@ -275,38 +255,6 @@ define([
             newFormat = newFormat.replace(/dd|d/g, 'DD'); // replace the date
 
             return newFormat;
-        },
-
-        /**
-         * Get Url Parameters.
-         *
-         * @param {String} url - Url string
-         * @returns {Object}
-         */
-        getUrlParameters: function (url) {
-            var params = {},
-                queries = url.split('?'),
-                temp,
-                i,
-                l;
-
-            if (!queries[1]) {
-                return params;
-            }
-
-            queries = queries[1].split('&');
-
-            for (i = 0, l = queries.length; i < l; i++) {
-                temp = queries[i].split('=');
-
-                if (temp[1]) {
-                    params[temp[0]] = decodeURIComponent(temp[1].replace(/\+/g, '%20'));
-                } else {
-                    params[temp[0]] = '';
-                }
-            }
-
-            return params;
         }
     };
 });

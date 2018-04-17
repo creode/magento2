@@ -98,8 +98,7 @@ class MapperTest extends \PHPUnit\Framework\TestCase
     {
         $expected = [];
         $rowData = array_values($this->_testData);
-        $count = count($this->_testData);
-        for ($i = 0; $i < $count; ++$i) {
+        for ($i = 0; $i < count($this->_testData); ++$i) {
             $data = $rowData[$i];
             $dependentPath = 'some path ' . $i;
             $field = $this->_getField(
@@ -159,8 +158,7 @@ class MapperTest extends \PHPUnit\Framework\TestCase
     {
         $expected = [];
         $rowData = array_values($this->_testData);
-        $count = count($this->_testData);
-        for ($i = 0; $i < $count; ++$i) {
+        for ($i = 0; $i < count($this->_testData); ++$i) {
             $data = $rowData[$i];
             $field = $this->_getField(
                 true,

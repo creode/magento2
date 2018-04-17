@@ -244,14 +244,12 @@ class BundleTest extends \PHPUnit\Framework\TestCase
                 ),
             ]
         );
-        $bundleOptionPriceMock = $this->getAmountPriceMock(
-            $baseAmount,
-            $regularPriceMock,
-            [['item' => $selections[0], 'value' => $basePriceValue, 'base_amount' => 321321]]
-        );
         $prices = [
-            'bundle_option' => $bundleOptionPriceMock,
-            'bundle_option_regular_price' => $bundleOptionPriceMock,
+            'bundle_option' => $this->getAmountPriceMock(
+                $baseAmount,
+                $regularPriceMock,
+                [['item' => $selections[0], 'value' => $basePriceValue, 'base_amount' => 321321]]
+            ),
             \Magento\Catalog\Pricing\Price\FinalPrice::PRICE_CODE => $finalPriceMock,
             \Magento\Catalog\Pricing\Price\RegularPrice::PRICE_CODE => $regularPriceMock,
         ];

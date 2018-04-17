@@ -135,14 +135,6 @@ class Config implements ConfigInterface
         }
 
         /**
-        * Session save handler - memcache, files, etc
-        */
-        $saveHandler = $deploymentConfig->get(self::PARAM_SESSION_SAVE_METHOD);
-        if ($saveHandler) {
-            $this->setOption('session.save_handler', $saveHandler);
-        }
-
-        /**
          * Session cache limiter
          */
         $cacheLimiter = $deploymentConfig->get(self::PARAM_SESSION_CACHE_LIMITER);

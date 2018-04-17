@@ -163,33 +163,21 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Product\Collection
     }
 
     /**
-     * Add filtering of products that have 0 items left.
+     * Add filtering of product then havent enoght stock
      *
      * @return $this
      * @since 100.2.0
      */
     public function addQuantityFilter()
     {
-        $stockItemTable = $this->getTable('cataloginventory_stock_item');
-        $stockStatusTable = $this->getTable('cataloginventory_stock_status');
         $this->getSelect()
             ->joinInner(
-                ['stock' => $stockStatusTable],
+                ['stock' => $this->getTable('cataloginventory_stock_status')],
                 'selection.product_id = stock.product_id',
-                []
-            )->joinInner(
-                ['stock_item' => $stockItemTable],
-                'selection.product_id = stock_item.product_id',
                 []
             )
             ->where(
-                '('
-                . 'selection.selection_can_change_qty'
-                . ' or '
-                . 'selection.selection_qty <= stock.qty'
-                . ' or '
-                .'stock_item.manage_stock = 0'
-                . ') and stock.stock_status = 1'
+                '(selection.selection_can_change_qty or selection.selection_qty <= stock.qty) and stock.stock_status'
             );
         return $this;
     }

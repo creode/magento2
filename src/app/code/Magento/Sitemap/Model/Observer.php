@@ -113,6 +113,7 @@ class Observer
                 $sitemap->generateXml();
             } catch (\Exception $e) {
                 $errors[] = $e->getMessage();
+                throw $e;
             }
         }
 
@@ -121,7 +122,8 @@ class Observer
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         )
         ) {
-            $this->inlineTranslation->suspend();
+            $translate = $this->_translateModel->getTranslateInline();
+            $this->_translateModel->setTranslateInline(false);
 
             $this->_transportBuilder->setTemplateIdentifier(
                 $this->_scopeConfig->getValue(

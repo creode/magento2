@@ -255,8 +255,7 @@ class CategoryRepositoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testSaveWithValidateCategoryException($error, $expectedException, $expectedExceptionMessage)
     {
-        $this->expectException($expectedException);
-        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectException($expectedException, $expectedExceptionMessage);
         $categoryId = 5;
         $categoryMock = $this->createMock(\Magento\Catalog\Model\Category::class);
         $this->extensibleDataObjectConverterMock

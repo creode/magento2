@@ -56,13 +56,9 @@ class StockStatusBaseSelectProcessorTest extends \PHPUnit\Framework\TestCase
                 []
             )
             ->willReturnSelf();
-
-        $this->select->expects($this->exactly(2))
+        $this->select->expects($this->once())
             ->method('where')
-            ->withConsecutive(
-                ['stock.stock_status = ?', Stock::STOCK_IN_STOCK, null],
-                ['stock.website_id = ?', 0, null]
-            )
+            ->with('stock.stock_status = ?', Stock::STOCK_IN_STOCK)
             ->willReturnSelf();
 
         $this->stockStatusBaseSelectProcessor->process($this->select);

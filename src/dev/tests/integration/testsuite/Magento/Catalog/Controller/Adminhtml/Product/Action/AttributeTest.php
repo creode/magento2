@@ -14,7 +14,6 @@ class AttributeTest extends \Magento\TestFramework\TestCase\AbstractBackendContr
      * @covers \Magento\Catalog\Controller\Adminhtml\Product\Action\Attribute\Save::execute
      *
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
-     * @magentoDbIsolation disabled
      */
     public function testSaveActionRedirectsSuccessfully()
     {
@@ -52,7 +51,6 @@ class AttributeTest extends \Magento\TestFramework\TestCase\AbstractBackendContr
      * @dataProvider saveActionVisibilityAttrDataProvider
      * @param array $attributes
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
-     * @magentoDbIsolation disabled
      */
     public function testSaveActionChangeVisibility($attributes)
     {
@@ -95,7 +93,6 @@ class AttributeTest extends \Magento\TestFramework\TestCase\AbstractBackendContr
      *
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
      * @magentoDataFixture Magento/Catalog/_files/product_simple_duplicated.php
-     * @magentoDbIsolation disabled
      */
     public function testValidateActionWithMassUpdate($attributes)
     {

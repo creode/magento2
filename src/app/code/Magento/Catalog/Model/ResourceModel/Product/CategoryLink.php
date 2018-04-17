@@ -83,12 +83,11 @@ class CategoryLink
         $insertUpdate = $this->processCategoryLinks($categoryLinks, $oldCategoryLinks);
         $deleteUpdate = $this->processCategoryLinks($oldCategoryLinks, $categoryLinks);
 
-        list($delete, $insert, $update) = $this->analyseUpdatedLinks($deleteUpdate, $insertUpdate);
+        list($delete, $insert) = $this->analyseUpdatedLinks($deleteUpdate, $insertUpdate);
 
         return array_merge(
-            $this->deleteCategoryLinks($product, $delete),
-            $this->updateCategoryLinks($product, $insert, true),
-            $this->updateCategoryLinks($product, $update)
+            $this->updateCategoryLinks($product, $insert),
+            $this->deleteCategoryLinks($product, $delete)
         );
     }
 
@@ -134,14 +133,15 @@ class CategoryLink
     /**
      * @param ProductInterface $product
      * @param array $insertLinks
-     * @param bool $insert
      * @return array
      */
-    private function updateCategoryLinks(ProductInterface $product, array $insertLinks, $insert = false)
+    private function updateCategoryLinks(ProductInterface $product, array $insertLinks)
     {
         if (empty($insertLinks)) {
             return [];
         }
+
+        $connection = $this->resourceConnection->getConnection();
 
         $data = [];
         foreach ($insertLinks as $categoryLink) {
@@ -153,22 +153,11 @@ class CategoryLink
         }
 
         if ($data) {
-            $connection = $this->resourceConnection->getConnection();
-            if ($insert) {
-                $connection->insertArray(
-                    $this->getCategoryLinkMetadata()->getEntityTable(),
-                    array_keys($data[0]),
-                    $data,
-                    \Magento\Framework\DB\Adapter\AdapterInterface::INSERT_IGNORE
-                );
-            } else {
-                // for mass update category links with constraint by unique key use insert on duplicate statement
-                $connection->insertOnDuplicate(
-                    $this->getCategoryLinkMetadata()->getEntityTable(),
-                    $data,
-                    ['position']
-                );
-            }
+            $connection->insertOnDuplicate(
+                $this->getCategoryLinkMetadata()->getEntityTable(),
+                $data,
+                ['position']
+            );
         }
 
         return array_column($insertLinks, 'category_id');
@@ -226,7 +215,7 @@ class CategoryLink
     }
 
     /**
-     * Analyse category links for update or/and delete. Return array of links for delete, insert and update
+     * Analyse category links for update or/and delete
      *
      * @param array $deleteUpdate
      * @param array $insertUpdate
@@ -237,7 +226,8 @@ class CategoryLink
         $delete = $deleteUpdate['changed'] ?: [];
         $insert = $insertUpdate['changed'] ?: [];
         $insert = array_merge_recursive($insert, $deleteUpdate['updated']);
+        $insert = array_merge_recursive($insert, $insertUpdate['updated']);
 
-        return [$delete, $insert, $insertUpdate['updated']];
+        return [$delete, $insert];
     }
 }

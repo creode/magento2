@@ -111,38 +111,17 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
 
     public function testAddQuantityFilter()
     {
-        $statusTableName = 'cataloginventory_stock_status';
-        $itemTableName = 'cataloginventory_stock_item';
-        $this->entity->expects($this->exactly(2))
+        $tableName = 'cataloginventory_stock_status';
+        $this->entity->expects($this->once())
             ->method('getTable')
-            ->willReturnOnConsecutiveCalls($itemTableName, $statusTableName);
-        $this->select->expects($this->exactly(2))
+            ->willReturn($tableName);
+        $this->select->expects($this->once())
             ->method('joinInner')
-            ->withConsecutive(
-                [
-                    ['stock' => $statusTableName],
-                    'selection.product_id = stock.product_id',
-                    []
-                ],
-                [
-                    ['stock_item' => $itemTableName],
-                    'selection.product_id = stock_item.product_id',
-                    []
-                ]
-            )->willReturnSelf();
-        $this->select
-            ->expects($this->once())
-            ->method('where')
             ->with(
-                '('
-                . 'selection.selection_can_change_qty'
-                . ' or '
-                . 'selection.selection_qty <= stock.qty'
-                . ' or '
-                .'stock_item.manage_stock = 0'
-                . ') and stock.stock_status = 1'
-            )
-            ->willReturnSelf();
+                ['stock' => $tableName],
+                'selection.product_id = stock.product_id',
+                []
+            )->willReturnSelf();
         $this->assertEquals($this->model, $this->model->addQuantityFilter());
     }
 }

@@ -6,9 +6,6 @@
 
 namespace Magento\CatalogRule\Test\Unit\Model\Indexer;
 
-use Magento\Catalog\Model\ResourceModel\Indexer\ActiveTableSwitcher;
-use Magento\CatalogRule\Model\Indexer\IndexerTableSwapperInterface;
-
 class ReindexRuleGroupWebsiteTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -27,9 +24,9 @@ class ReindexRuleGroupWebsiteTest extends \PHPUnit\Framework\TestCase
     private $resourceMock;
 
     /**
-     * @var IndexerTableSwapperInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Catalog\Model\ResourceModel\Indexer\ActiveTableSwitcher|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $tableSwapperMock;
+    private $activeTableSwitcherMock;
 
     protected function setUp()
     {
@@ -39,19 +36,14 @@ class ReindexRuleGroupWebsiteTest extends \PHPUnit\Framework\TestCase
         $this->resourceMock = $this->getMockBuilder(\Magento\Framework\App\ResourceConnection::class)
             ->disableOriginalConstructor()
             ->getMock();
-        /** @var ActiveTableSwitcher|\PHPUnit_Framework_MockObject_MockObject $activeTableSwitcherMock */
-        $activeTableSwitcherMock =
-            $this->getMockBuilder(ActiveTableSwitcher::class)
+        $this->activeTableSwitcherMock =
+            $this->getMockBuilder(\Magento\Catalog\Model\ResourceModel\Indexer\ActiveTableSwitcher::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->tableSwapperMock = $this->getMockForAbstractClass(
-            IndexerTableSwapperInterface::class
-        );
         $this->model = new \Magento\CatalogRule\Model\Indexer\ReindexRuleGroupWebsite(
             $this->dateTimeMock,
             $this->resourceMock,
-            $activeTableSwitcherMock,
-            $this->tableSwapperMock
+            $this->activeTableSwitcherMock
         );
     }
 
@@ -63,12 +55,12 @@ class ReindexRuleGroupWebsiteTest extends \PHPUnit\Framework\TestCase
         $this->resourceMock->expects($this->at(0))->method('getConnection')->willReturn($connectionMock);
         $this->dateTimeMock->expects($this->once())->method('gmtTimestamp')->willReturn($timeStamp);
 
-        $this->tableSwapperMock->expects($this->at(0))
-            ->method('getWorkingTableName')
+        $this->activeTableSwitcherMock->expects($this->at(0))
+            ->method('getAdditionalTableName')
             ->with('catalogrule_group_website')
             ->willReturn('catalogrule_group_website_replica');
-        $this->tableSwapperMock->expects($this->at(1))
-            ->method('getWorkingTableName')
+        $this->activeTableSwitcherMock->expects($this->at(1))
+            ->method('getAdditionalTableName')
             ->with('catalogrule_product')
             ->willReturn('catalogrule_product_replica');
 

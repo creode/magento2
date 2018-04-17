@@ -293,12 +293,6 @@ class Totals extends \Magento\Framework\View\Element\Template
      */
     public function applySortOrder($order)
     {
-        \uksort(
-            $this->_totals,
-            function ($code1, $code2) use ($order) {
-                return ($order[$code1] ?? 0) <=> ($order[$code2] ?? 0);
-            }
-        );
         return $this;
     }
 

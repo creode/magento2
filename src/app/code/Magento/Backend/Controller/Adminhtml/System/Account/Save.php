@@ -32,8 +32,9 @@ class Save extends \Magento\Backend\Controller\Adminhtml\System\Account
     {
         if (!($this->securityCookie instanceof SecurityCookie)) {
             return \Magento\Framework\App\ObjectManager::getInstance()->get(SecurityCookie::class);
+        } else {
+            return $this->securityCookie;
         }
-        return $this->securityCookie;
     }
 
     /**
@@ -53,9 +54,9 @@ class Save extends \Magento\Backend\Controller\Adminhtml\System\Account
         $user = $this->_objectManager->create(\Magento\User\Model\User::class)->load($userId);
 
         $user->setId($userId)
-            ->setUserName($this->getRequest()->getParam('username', false))
-            ->setFirstName($this->getRequest()->getParam('firstname', false))
-            ->setLastName($this->getRequest()->getParam('lastname', false))
+            ->setUsername($this->getRequest()->getParam('username', false))
+            ->setFirstname($this->getRequest()->getParam('firstname', false))
+            ->setLastname($this->getRequest()->getParam('lastname', false))
             ->setEmail(strtolower($this->getRequest()->getParam('email', false)));
 
         if ($this->_objectManager->get(\Magento\Framework\Validator\Locale::class)->isValid($interfaceLocale)) {

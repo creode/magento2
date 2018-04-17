@@ -9,8 +9,6 @@ use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Catalog\Model\Indexer\Category\Product;
-use Magento\Framework\App\ObjectManager;
-use Magento\Catalog\Model\Indexer\Category\Product\TableMaintainer;
 
 class StoreGroup
 {
@@ -25,20 +23,11 @@ class StoreGroup
     protected $indexerRegistry;
 
     /**
-     * @var TableMaintainer
-     */
-    protected $tableMaintainer;
-
-    /**
      * @param IndexerRegistry $indexerRegistry
-     * @param TableMaintainer $tableMaintainer
      */
-    public function __construct(
-        IndexerRegistry $indexerRegistry,
-        TableMaintainer $tableMaintainer
-    ) {
+    public function __construct(IndexerRegistry $indexerRegistry)
+    {
         $this->indexerRegistry = $indexerRegistry;
-        $this->tableMaintainer = $tableMaintainer;
     }
 
     /**
@@ -83,23 +72,5 @@ class StoreGroup
     {
         return ($group->dataHasChangedFor('website_id') || $group->dataHasChangedFor('root_category_id'))
                && !$group->isObjectNew();
-    }
-
-    /**
-     * Delete catalog_category_product indexer tables for deleted store group
-     *
-     * @param AbstractDb $subject
-     * @param AbstractDb $objectResource
-     * @param AbstractModel $storeGroup
-     *
-     * @return AbstractDb
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function afterDelete(AbstractDb $subject, AbstractDb $objectResource, AbstractModel $storeGroup)
-    {
-        foreach ($storeGroup->getStores() as $store) {
-            $this->tableMaintainer->dropTablesForStore($store->getId());
-        }
-        return $objectResource;
     }
 }

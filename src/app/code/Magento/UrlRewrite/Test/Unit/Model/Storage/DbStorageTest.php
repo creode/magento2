@@ -8,7 +8,6 @@
 
 namespace Magento\UrlRewrite\Test\Unit\Model\Storage;
 
-use Magento\Framework\DB\Select;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\UrlRewrite\Model\Storage\DbStorage;
 use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
@@ -52,9 +51,7 @@ class DbStorageTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $this->dataObjectHelper = $this->createMock(\Magento\Framework\Api\DataObjectHelper::class);
         $this->connectionMock = $this->createMock(\Magento\Framework\DB\Adapter\AdapterInterface::class);
-        $this->select = $this->getMockBuilder(Select::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->select = $this->createPartialMock(\Magento\Framework\DB\Select::class, ['from', 'where', 'deleteFromSelect']);
         $this->resource = $this->createMock(\Magento\Framework\App\ResourceConnection::class);
 
         $this->resource->expects($this->any())
@@ -437,41 +434,67 @@ class DbStorageTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['urlRewrite1'], $this->storage->findOneByData($data));
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     */
     public function testReplace()
     {
         $urlFirst = $this->createMock(\Magento\UrlRewrite\Service\V1\Data\UrlRewrite::class);
         $urlSecond = $this->createMock(\Magento\UrlRewrite\Service\V1\Data\UrlRewrite::class);
 
         // delete
+
         $urlFirst->expects($this->any())
-            ->method('getEntityType')
-            ->willReturn('product');
-        $urlFirst->expects($this->any())
-            ->method('getEntityId')
-            ->willReturn('entity_1');
-        $urlFirst->expects($this->any())
-            ->method('getStoreId')
-            ->willReturn('store_id_1');
+            ->method('getByKey')
+            ->will($this->returnValueMap([
+                [UrlRewrite::ENTITY_TYPE, 'product'],
+                [UrlRewrite::ENTITY_ID, 'entity_1'],
+                [UrlRewrite::STORE_ID, 'store_id_1'],
+            ]));
+        $urlFirst->expects($this->any())->method('getEntityType')->willReturn('product');
         $urlSecond->expects($this->any())
-            ->method('getEntityType')
-            ->willReturn('category');
-        $urlSecond->expects($this->any())
-            ->method('getEntityId')
-            ->willReturn('entity_2');
-        $urlSecond->expects($this->any())
-            ->method('getStoreId')
-            ->willReturn('store_id_2');
+            ->method('getByKey')
+            ->will($this->returnValueMap([
+                [UrlRewrite::ENTITY_TYPE, 'category'],
+                [UrlRewrite::ENTITY_ID, 'entity_2'],
+                [UrlRewrite::STORE_ID, 'store_id_2'],
+            ]));
+        $urlSecond->expects($this->any())->method('getEntityType')->willReturn('category');
 
         $this->connectionMock->expects($this->any())
             ->method('quoteIdentifier')
             ->will($this->returnArgument(0));
 
-        $this->select->expects($this->any())
-            ->method($this->anything())
-            ->willReturnSelf();
+        $this->select->expects($this->at(1))
+            ->method('where')
+            ->with('entity_id IN (?)', ['entity_1']);
+
+        $this->select->expects($this->at(2))
+            ->method('where')
+            ->with('store_id IN (?)', ['store_id_1']);
+
+        $this->select->expects($this->at(3))
+            ->method('where')
+            ->with('entity_type IN (?)', 'product');
+
+        $this->select->expects($this->at(4))
+            ->method('deleteFromSelect')
+            ->with('table_name')
+            ->will($this->returnValue('sql delete query'));
+
+        $this->select->expects($this->at(6))
+            ->method('where')
+            ->with('entity_id IN (?)', ['entity_2']);
+
+        $this->select->expects($this->at(7))
+            ->method('where')
+            ->with('store_id IN (?)', ['store_id_2']);
+
+        $this->select->expects($this->at(8))
+            ->method('where')
+            ->with('entity_type IN (?)', 'category');
+
+        $this->select->expects($this->at(9))
+            ->method('deleteFromSelect')
+            ->with('table_name')
+            ->will($this->returnValue('sql delete query'));
 
         $this->resource->expects($this->any())
             ->method('getTableName')

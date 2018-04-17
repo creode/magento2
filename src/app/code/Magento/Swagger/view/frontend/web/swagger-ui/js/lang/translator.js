@@ -25,18 +25,17 @@
 
             sel = sel || '[data-sw-translate]';
 
-            Array.prototype.slice.call(document.querySelectorAll(sel)).forEach(function (elem) {
-                elem.innerHTML = $this._tryTranslate(elem.innerHTML);
-                elem.value = $this._tryTranslate(elem.value);
-                elem.setAttribute('title', $this._tryTranslate(elem.getAttribute('title')));
+            $(sel).each(function () {
+                $(this).html($this._tryTranslate($(this).html()));
+
+                $(this).val($this._tryTranslate($(this).val()));
+                $(this).attr('title', $this._tryTranslate($(this).attr('title')));
             });
         },
 
         /** @function translate */
         _tryTranslate: function (word) {
-            word = word || '';
-
-            return this._words[word.trim()] !== undefined ? this._words[word.trim()] : word;
+            return this._words[$.trim(word)] !== undefined ? this._words[$.trim(word)] : word;
         },
 
         /** @function learn */

@@ -302,7 +302,7 @@ class ImagesTest extends \PHPUnit\Framework\TestCase
     {
         $storeId = 1;
         $this->imagesHelper->setStoreId($storeId);
-        $checkResult = new \stdClass();
+        $checkResult = new \StdClass();
         $checkResult->isAllowed = false;
         $this->eventManagerMock->expects($this->any())
             ->method('dispatch')

@@ -62,7 +62,6 @@ class Price extends \Magento\Catalog\Model\ResourceModel\Product\Indexer\Price\D
     {
         $connection = $this->getConnection();
         $table = $this->_getDownloadableLinkPriceTable();
-        $finalPriceTable = $this->_getDefaultFinalPriceTable();
 
         $this->_prepareDownloadableLinkPriceTable();
 
@@ -72,7 +71,7 @@ class Price extends \Magento\Catalog\Model\ResourceModel\Product\Indexer\Price\D
         $ifPrice = $connection->getIfNullSql('dlpw.price_id', 'dlpd.price');
 
         $select = $connection->select()->from(
-            ['i' => $finalPriceTable],
+            ['i' => $this->_getDefaultFinalPriceTable()],
             ['entity_id', 'customer_group_id', 'website_id']
         )->join(
             ['dl' => $dlType->getBackend()->getTable()],
@@ -120,7 +119,7 @@ class Price extends \Magento\Catalog\Model\ResourceModel\Product\Indexer\Price\D
             ]
         );
 
-        $query = $select->crossUpdateFromSelect(['i' => $finalPriceTable]);
+        $query = $select->crossUpdateFromSelect(['i' => $this->_getDefaultFinalPriceTable()]);
         $connection->query($query);
 
         $connection->delete($table);

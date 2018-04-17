@@ -154,7 +154,7 @@ class Option extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             }
             $connection->commit();
         } catch (\Exception $e) {
-            $connection->rollBack();
+            $connection->rollback();
             throw new \Exception($e->getMessage());
         }
         return $this;

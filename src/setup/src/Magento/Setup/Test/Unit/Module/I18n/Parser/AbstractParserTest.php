@@ -29,8 +29,7 @@ class AbstractParserTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateOptions($options, $message)
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage($message);
+        $this->expectException('InvalidArgumentException', $message);
 
         $this->_parserMock->addAdapter(
             'php',

@@ -132,7 +132,7 @@ class FirstClassForParentCall
         $this->_arrayVariable = $arrayVariable;
     }
 }
-class ThirdClassForParentCall extends FirstClassForParentCall
+class ThirdClassForParentCall extends firstClassForParentCall
 {
     /**
      * @var stdClass
@@ -155,7 +155,7 @@ class ThirdClassForParentCall extends FirstClassForParentCall
         $this->_secondClass = $secondClass;
     }
 }
-class WrongArgumentsOrder extends FirstClassForParentCall
+class WrongArgumentsOrder extends firstClassForParentCall
 {
     /**
      * @var stdClass
@@ -178,7 +178,7 @@ class WrongArgumentsOrder extends FirstClassForParentCall
         $this->_secondClass = $secondClass;
     }
 }
-class ArgumentsOnSeparateLines extends FirstClassForParentCall
+class ArgumentsOnSeparateLines extends firstClassForParentCall
 {
     /**
      * @var stdClass

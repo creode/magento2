@@ -55,7 +55,7 @@ class ImporterFactoryTest extends \PHPUnit\Framework\TestCase
         $className = 'some/class/name';
 
         /** @var \StdClass|\PHPUnit_Framework_MockObject_MockObject $importerMock */
-        $importerMock = $this->getMockBuilder(\stdClass::class)
+        $importerMock = $this->getMockBuilder(\StdClass::class)
             ->disableOriginalConstructor()
             ->getMock();
 

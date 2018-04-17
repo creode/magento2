@@ -143,7 +143,7 @@ class Encryptor implements EncryptorInterface
     public function getHash($password, $salt = false, $version = self::HASH_VERSION_LATEST)
     {
         if ($salt === false) {
-            return $this->hash($password, $version);
+            return $this->hash($password);
         }
         if ($salt === true) {
             $salt = self::DEFAULT_SALT_LENGTH;
@@ -155,7 +155,7 @@ class Encryptor implements EncryptorInterface
         return implode(
             self::DELIMITER,
             [
-                $this->hash($salt . $password, $version),
+                $this->hash($salt . $password),
                 $salt,
                 $version
             ]

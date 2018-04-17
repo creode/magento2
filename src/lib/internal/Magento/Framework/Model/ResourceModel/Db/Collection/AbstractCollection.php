@@ -496,9 +496,9 @@ abstract class AbstractCollection extends AbstractDb implements SourceProviderIn
     /**
      * Join table to collection select
      *
-     * @param string|array $table
+     * @param string $table
      * @param string $cond
-     * @param string|array $cols
+     * @param string $cols
      * @return $this
      */
     public function join($table, $cond, $cols = '*')

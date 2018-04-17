@@ -260,7 +260,6 @@ class EmailSenderTest extends \PHPUnit\Framework\TestCase
                 'formattedShippingAddress' => 'Formatted address',
                 'formattedBillingAddress' => 'Formatted address',
             ];
-            $transport = new \Magento\Framework\DataObject($transport);
 
             $this->eventManagerMock->expects($this->once())
                 ->method('dispatch')
@@ -268,14 +267,13 @@ class EmailSenderTest extends \PHPUnit\Framework\TestCase
                     'email_invoice_set_template_vars_before',
                     [
                         'sender' => $this->subject,
-                        'transport' => $transport->getData(),
-                        'transportObject' => $transport,
+                        'transport' => $transport,
                     ]
                 );
 
             $this->templateContainerMock->expects($this->once())
                 ->method('setTemplateVars')
-                ->with($transport->getData());
+                ->with($transport);
 
             $this->identityContainerMock->expects($this->once())
                 ->method('isEnabled')

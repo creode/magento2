@@ -9,12 +9,10 @@ namespace Magento\Framework\App\Response;
 
 use Magento\Framework\App\Http\Context;
 use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Stdlib\Cookie\CookieMetadata;
 use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\Framework\App\Request\Http as HttpRequest;
-use Magento\Framework\Session\Config\ConfigInterface;
 
 class Http extends \Magento\Framework\HTTP\PhpEnvironment\Response
 {
@@ -53,32 +51,24 @@ class Http extends \Magento\Framework\HTTP\PhpEnvironment\Response
     protected $dateTime;
 
     /**
-     * @var \Magento\Framework\Session\Config\ConfigInterface
-     */
-    private $sessionConfig;
-
-    /**
      * @param HttpRequest $request
      * @param CookieManagerInterface $cookieManager
      * @param CookieMetadataFactory $cookieMetadataFactory
      * @param Context $context
      * @param DateTime $dateTime
-     * @param ConfigInterface|null $sessionConfig
      */
     public function __construct(
         HttpRequest $request,
         CookieManagerInterface $cookieManager,
         CookieMetadataFactory $cookieMetadataFactory,
         Context $context,
-        DateTime $dateTime,
-        ConfigInterface $sessionConfig = null
+        DateTime $dateTime
     ) {
         $this->request = $request;
         $this->cookieManager = $cookieManager;
         $this->cookieMetadataFactory = $cookieMetadataFactory;
         $this->context = $context;
         $this->dateTime = $dateTime;
-        $this->sessionConfig = $sessionConfig ?: ObjectManager::getInstance()->get(ConfigInterface::class);
     }
 
     /**
@@ -101,10 +91,7 @@ class Http extends \Magento\Framework\HTTP\PhpEnvironment\Response
     {
         $varyString = $this->context->getVaryString();
         if ($varyString) {
-            $cookieLifeTime = $this->sessionConfig->getCookieLifetime();
-            $sensitiveCookMetadata = $this->cookieMetadataFactory->createSensitiveCookieMetadata(
-                [CookieMetadata::KEY_DURATION => $cookieLifeTime]
-            )->setPath('/');
+            $sensitiveCookMetadata = $this->cookieMetadataFactory->createSensitiveCookieMetadata()->setPath('/');
             $this->cookieManager->setSensitiveCookie(self::COOKIE_VARY_STRING, $varyString, $sensitiveCookMetadata);
         } elseif ($this->request->get(self::COOKIE_VARY_STRING)) {
             $cookieMetadata = $this->cookieMetadataFactory->createSensitiveCookieMetadata()->setPath('/');

@@ -315,10 +315,6 @@ class ServiceInputProcessor implements ServicePayloadConverterInterface
      */
     public function convertValue($data, $type)
     {
-        if ($data === '') {
-            return $data;
-        }
-
         $isArrayType = $this->typeProcessor->isArrayType($type);
         if ($isArrayType && isset($data['item'])) {
             $data = $this->_removeSoapItemNode($data);
@@ -329,7 +325,13 @@ class ServiceInputProcessor implements ServicePayloadConverterInterface
             /** Complex type or array of complex types */
             if ($isArrayType) {
                 // Initializing the result for array type else it will return null for empty array
-                $result = $this->getResultForArrayType($data, $type);
+                $result = is_array($data) ? [] : null;
+                $itemType = $this->typeProcessor->getArrayItemType($type);
+                if (is_array($data)) {
+                    foreach ($data as $key => $item) {
+                        $result[$key] = $this->_createFromArray($itemType, $item);
+                    }
+                }
             } else {
                 $result = $this->_createFromArray($type, $data);
             }
@@ -382,24 +384,5 @@ class ServiceInputProcessor implements ServicePayloadConverterInterface
                 throw $exception;
             }
         }
-    }
-
-    /**
-     * @param mixed $data
-     * @param string $type
-     *
-     * @return array|null
-     */
-    private function getResultForArrayType($data, $type)
-    {
-        $result = is_array($data) ? [] : null;
-        $itemType = $this->typeProcessor->getArrayItemType($type);
-        if (is_array($data)) {
-            foreach ($data as $key => $item) {
-                $result[$key] = $this->_createFromArray($itemType, $item);
-            }
-        }
-
-        return $result;
     }
 }

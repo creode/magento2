@@ -10,8 +10,7 @@ define([
     'ko',
     'underscore',
     'sidebar',
-    'mage/translate',
-    'mage/dropdown'
+    'mage/translate'
 ], function (Component, customerData, $, ko, _) {
     'use strict';
 

@@ -18,7 +18,6 @@ use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DB\Select;
 use Magento\Framework\EntityManager\MetadataPool;
 use Magento\Store\Model\Store;
-use Magento\Catalog\Model\Indexer\Category\Product\TableMaintainer;
 
 /**
  * Product collection
@@ -274,11 +273,6 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
     private $backend;
 
     /**
-     * @var TableMaintainer
-     */
-    private $tableMaintainer;
-
-    /**
      * Collection constructor
      *
      * @param \Magento\Framework\Data\Collection\EntityFactory $entityFactory
@@ -303,7 +297,6 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
      * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
      * @param ProductLimitationFactory|null $productLimitationFactory
      * @param MetadataPool|null $metadataPool
-     * @param TableMaintainer|null $tableMaintainer
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -329,8 +322,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
         GroupManagementInterface $groupManagement,
         \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
         ProductLimitationFactory $productLimitationFactory = null,
-        MetadataPool $metadataPool = null,
-        TableMaintainer $tableMaintainer = null
+        MetadataPool $metadataPool = null
     ) {
         $this->moduleManager = $moduleManager;
         $this->_catalogProductFlatState = $catalogProductFlatState;
@@ -360,7 +352,6 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
             $storeManager,
             $connection
         );
-        $this->tableMaintainer = $tableMaintainer ?: ObjectManager::getInstance()->get(TableMaintainer::class);
     }
 
     /**
@@ -1101,7 +1092,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
     protected function _getSelectCountSql($select = null, $resetLeftJoins = true)
     {
         $this->_renderFilters();
-        $countSelect = $select === null ? $this->_getClearSelect() : $this->_buildClearSelect($select);
+        $countSelect = is_null($select) ? $this->_getClearSelect() : $this->_buildClearSelect($select);
         $countSelect->columns('COUNT(DISTINCT e.entity_id)');
         if ($resetLeftJoins) {
             $countSelect->resetJoinLeft();
@@ -1201,7 +1192,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
             )->distinct(
                 false
             )->join(
-                ['count_table' => $this->tableMaintainer->getMainTable($this->getStoreId())],
+                ['count_table' => $this->getTable('catalog_category_product_index')],
                 'count_table.product_id = e.entity_id',
                 [
                     'count_table.category_id',
@@ -1444,7 +1435,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
             $ids = $this->_allIdsCache;
         }
 
-        if ($ids === null) {
+        if (is_null($ids)) {
             $ids = $this->getAllIds();
             $this->setAllIdsCache($ids);
         }
@@ -1475,17 +1466,17 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
     {
         $this->_productLimitationFilters->setUsePriceIndex(true);
 
-        if (!isset($this->_productLimitationFilters['customer_group_id']) && $customerGroupId === null) {
+        if (!isset($this->_productLimitationFilters['customer_group_id']) && is_null($customerGroupId)) {
             $customerGroupId = $this->_customerSession->getCustomerGroupId();
         }
-        if (!isset($this->_productLimitationFilters['website_id']) && $websiteId === null) {
+        if (!isset($this->_productLimitationFilters['website_id']) && is_null($websiteId)) {
             $websiteId = $this->_storeManager->getStore($this->getStoreId())->getWebsiteId();
         }
 
-        if ($customerGroupId !== null) {
+        if (!is_null($customerGroupId)) {
             $this->_productLimitationFilters['customer_group_id'] = $customerGroupId;
         }
-        if ($websiteId !== null) {
+        if (!is_null($websiteId)) {
             $this->_productLimitationFilters['website_id'] = $websiteId;
         }
 
@@ -1632,7 +1623,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
      */
     public function addFilterByRequiredOptions()
     {
-        $this->addAttributeToFilter('required_options', [['neq' => 1]], 'left');
+        $this->addAttributeToFilter('required_options', [['neq' => 1], ['null' => true]], 'left');
         return $this;
     }
 
@@ -1679,7 +1670,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
 
             return $this;
         } elseif ($attribute == 'is_saleable') {
-            $this->getSelect()->order("is_salable " . $dir);
+            $this->getSelect()->order("is_saleable " . $dir);
             return $this;
         }
 
@@ -1975,7 +1966,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
             $this->getSelect()->setPart(\Magento\Framework\DB\Select::FROM, $fromPart);
         } else {
             $this->getSelect()->join(
-                ['cat_index' => $this->tableMaintainer->getMainTable($this->getStoreId())],
+                ['cat_index' => $this->getTable('catalog_category_product_index')],
                 $joinCond,
                 ['cat_index_position' => 'position']
             );
@@ -2227,7 +2218,6 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @since 101.0.1
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function addMediaGalleryData()
     {
@@ -2239,36 +2229,34 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
             return $this;
         }
 
-        $items = $this->getItems();
-        $linkField = $this->getProductEntityMetadata()->getLinkField();
-
-        $select = $this->getMediaGalleryResource()
-            ->createBatchBaseSelect(
-                $this->getStoreId(),
-                $this->getAttribute('media_gallery')->getAttributeId()
-            )->reset(
-                Select::ORDER // we don't care what order is in current scenario
-            )->where(
-                'entity.' . $linkField . ' IN (?)',
-                array_map(
-                    function ($item) use ($linkField) {
-                        return (int) $item->getOrigData($linkField);
-                    },
-                    $items
-                )
-            );
+        /** @var $attribute \Magento\Catalog\Model\ResourceModel\Eav\Attribute */
+        $attribute = $this->getAttribute('media_gallery');
+        $select = $this->getMediaGalleryResource()->createBatchBaseSelect(
+            $this->getStoreId(),
+            $attribute->getAttributeId()
+        );
 
         $mediaGalleries = [];
+        $linkField = $this->getProductEntityMetadata()->getLinkField();
+        $items = $this->getItems();
+
+        $select->where(
+            'entity.' . $linkField . ' IN (?)',
+            array_map(
+                function ($item) use ($linkField) {
+                    return $item->getData($linkField);
+                },
+                $items
+            )
+        );
         foreach ($this->getConnection()->fetchAll($select) as $row) {
             $mediaGalleries[$row[$linkField]][] = $row;
         }
 
         foreach ($items as $item) {
-            $this->getGalleryReadHandler()
-                ->addMediaDataToProduct(
-                    $item,
-                    $mediaGalleries[$item->getOrigData($linkField)] ?? []
-                );
+            $mediaEntries = isset($mediaGalleries[$item->getData($linkField)]) ?
+                $mediaGalleries[$item->getData($linkField)] : [];
+            $this->getGalleryReadHandler()->addMediaDataToProduct($item, $mediaEntries);
         }
 
         $this->setFlag('media_gallery_added', true);
@@ -2359,7 +2347,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
      */
     public function getMaxPrice()
     {
-        if ($this->_maxPrice === null) {
+        if (is_null($this->_maxPrice)) {
             $this->_prepareStatisticsData();
         }
 
@@ -2373,7 +2361,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
      */
     public function getMinPrice()
     {
-        if ($this->_minPrice === null) {
+        if (is_null($this->_minPrice)) {
             $this->_prepareStatisticsData();
         }
 
@@ -2387,7 +2375,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
      */
     public function getPriceStandardDeviation()
     {
-        if ($this->_priceStandardDeviation === null) {
+        if (is_null($this->_priceStandardDeviation)) {
             $this->_prepareStatisticsData();
         }
 
@@ -2401,7 +2389,7 @@ class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\Abstrac
      */
     public function getPricesCount()
     {
-        if ($this->_pricesCount === null) {
+        if (is_null($this->_pricesCount)) {
             $this->_prepareStatisticsData();
         }
 

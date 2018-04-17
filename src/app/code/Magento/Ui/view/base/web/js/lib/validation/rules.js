@@ -84,10 +84,8 @@ define([
         ],
         'range-words': [
             function (value, params) {
-                var match = utils.stripHtml(value).match(/\b\w+\b/g) || [];
-
-                return match.length >= params[0] &&
-                    match.length <= params[1];
+                return utils.stripHtml(value).match(/\b\w+\b/g).length >= params[0] &&
+                    value.match(/bw+b/g).length < params[1];
             },
             $.mage.__('Please enter between {0} and {1} words.')
         ],
@@ -909,10 +907,8 @@ define([
         ],
         'validate-item-quantity': [
             function (value, params) {
-                var validator = this,
-                    result = false,
-                    // obtain values for validation
-                    qty = utils.parseNumber(value),
+                // obtain values for validation
+                var qty = utils.parseNumber(value),
                     isMinAllowedValid = typeof params.minAllowed === 'undefined' ||
                         qty >= utils.parseNumber(params.minAllowed),
                     isMaxAllowedValid = typeof params.maxAllowed === 'undefined' ||
@@ -920,42 +916,9 @@ define([
                     isQtyIncrementsValid = typeof params.qtyIncrements === 'undefined' ||
                         qty % utils.parseNumber(params.qtyIncrements) === 0;
 
-                result = qty > 0;
-
-                if (result === false) {
-                    validator.itemQtyErrorMessage = $.mage.__('Please enter a quantity greater than 0.');//eslint-disable-line max-len
-
-                    return result;
-                }
-
-                result = isMinAllowedValid;
-
-                if (result === false) {
-                    validator.itemQtyErrorMessage = $.mage.__('The fewest you may purchase is %1.').replace('%1', params.minAllowed);//eslint-disable-line max-len
-
-                    return result;
-                }
-
-                result = isMaxAllowedValid;
-
-                if (result === false) {
-                    validator.itemQtyErrorMessage = $.mage.__('The maximum you may purchase is %1.').replace('%1', params.maxAllowed);//eslint-disable-line max-len
-
-                    return result;
-                }
-
-                result = isQtyIncrementsValid;
-
-                if (result === false) {
-                    validator.itemQtyErrorMessage = $.mage.__('You can buy this product only in quantities of %1 at a time.').replace('%1', params.qtyIncrements);//eslint-disable-line max-len
-
-                    return result;
-                }
-
-                return result;
-            }, function () {
-                return this.itemQtyErrorMessage;
-            }
+                return isMaxAllowedValid && isMinAllowedValid && isQtyIncrementsValid && qty > 0;
+            },
+            ''
         ],
         'equalTo': [
             function (value, param) {

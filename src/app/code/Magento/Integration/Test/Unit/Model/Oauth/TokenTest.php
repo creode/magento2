@@ -384,8 +384,7 @@ class TokenTest extends \PHPUnit\Framework\TestCase
         $this->validatorMock->expects($this->once())->method('isValid')->willReturn(false);
         $this->validatorMock->expects($this->once())->method('getMessages')->willReturn([$exceptionMessage]);
 
-        $this->expectException(\Magento\Framework\Oauth\Exception::class);
-        $this->expectExceptionMessage($exceptionMessage);
+        $this->expectException(\Magento\Framework\Oauth\Exception::class, $exceptionMessage);
 
         $this->tokenModel->validate();
     }
@@ -403,8 +402,7 @@ class TokenTest extends \PHPUnit\Framework\TestCase
         $this->validatorKeyLengthMock->expects($this->once())->method('isValid')->willReturn(false);
         $this->validatorKeyLengthMock->expects($this->once())->method('getMessages')->willReturn([$exceptionMessage]);
 
-        $this->expectException(\Magento\Framework\Oauth\Exception::class);
-        $this->expectExceptionMessage($exceptionMessage);
+        $this->expectException(\Magento\Framework\Oauth\Exception::class, $exceptionMessage);
 
         $this->tokenModel->validate();
     }
@@ -431,8 +429,7 @@ class TokenTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->validatorKeyLengthMock->expects($this->once())->method('getMessages')->willReturn([$exceptionMessage]);
-        $this->expectException(\Magento\Framework\Oauth\Exception::class);
-        $this->expectExceptionMessage($exceptionMessage);
+        $this->expectException(\Magento\Framework\Oauth\Exception::class, $exceptionMessage);
 
         $this->tokenModel->validate();
     }
@@ -462,8 +459,7 @@ class TokenTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $this->validatorKeyLengthMock->expects($this->once())->method('getMessages')->willReturn([$exceptionMessage]);
-        $this->expectException(\Magento\Framework\Oauth\Exception::class);
-        $this->expectExceptionMessage($exceptionMessage);
+        $this->expectException(\Magento\Framework\Oauth\Exception::class, $exceptionMessage);
 
         $this->tokenModel->validate();
     }

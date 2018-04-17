@@ -467,7 +467,7 @@ class User extends AbstractModel implements StorageInterface, UserInterface
             $changes[] = __('password');
         }
 
-        if ($this->getUserName() != $this->getOrigData('username') && $this->getOrigData('username')) {
+        if ($this->getUsername() != $this->getOrigData('username') && $this->getOrigData('username')) {
             $changes[] = __('username');
         }
 
@@ -515,7 +515,7 @@ class User extends AbstractModel implements StorageInterface, UserInterface
      */
     public function getName($separator = ' ')
     {
-        return $this->getFirstName() . $separator . $this->getLastName();
+        return $this->getFirstname() . $separator . $this->getLastname();
     }
 
     /**
@@ -547,7 +547,7 @@ class User extends AbstractModel implements StorageInterface, UserInterface
                 ['username' => $username, 'user' => $this]
             );
             $this->loadByUsername($username);
-            $sensitive = $config ? $username == $this->getUserName() : true;
+            $sensitive = $config ? $username == $this->getUsername() : true;
             if ($sensitive && $this->getId()) {
                 $result = $this->verifyIdentity($password);
             }

@@ -11,4 +11,3 @@
 \Magento\Framework\DB\FieldDataConversionException
 \Magento\Signifyd\Model\SignifydGateway\GatewayException
 \Magento\Signifyd\Model\SignifydGateway\ApiCallException
-\Magento\Catalog\Model\Product\Image\NotLoadInfoImageException

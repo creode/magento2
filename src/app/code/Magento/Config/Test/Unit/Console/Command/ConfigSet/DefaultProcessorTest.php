@@ -166,9 +166,7 @@ class DefaultProcessorTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @expectedException \Magento\Framework\Exception\LocalizedException
-     * @codingStandardsIgnoreStart
-     * @expectedExceptionMessage The value you set has already been locked. To change the value, use the --lock-env option.
-     * @codingStandardsIgnoreEnd
+     * @expectedExceptionMessage The value you set has already been locked. To change the value, use the --lock option.
      */
     public function testProcessLockedValue()
     {

@@ -98,16 +98,14 @@ define([
                 }, this), 250);
             }, this));
 
-            if (this.element.get(0) === document.activeElement) {
-                this.setActiveState(true);
-            }
+            this.element.trigger('blur');
 
             this.element.on('focus', this.setActiveState.bind(this, true));
             this.element.on('keydown', this._onKeyDown);
             this.element.on('input propertychange', this._onPropertyChange);
 
-            this.searchForm.on('submit', $.proxy(function (e) {
-                this._onSubmit(e);
+            this.searchForm.on('submit', $.proxy(function () {
+                this._onSubmit();
                 this._updateAriaHasPopup(false);
             }, this));
         },

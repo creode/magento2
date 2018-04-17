@@ -22,11 +22,14 @@
             </tr>
         </thead>
         <?php foreach ($_shipment->getAllItems() as $_item): ?>
-            <?php if (!$_item->getOrderItem()->getParentItem()) : ?>
-                <tbody>
-                    <?= $block->getItemHtml($_item) ?>
-                </tbody>
-            <?php endif; ?>
+            <?php
+                if ($_item->getOrderItem()->getParentItem()) {
+                    continue;
+                }
+            ?>
+            <tbody>
+                <?= $block->getItemHtml($_item) ?>
+            </tbody>
         <?php endforeach; ?>
     </table>
 <?php endif; ?>

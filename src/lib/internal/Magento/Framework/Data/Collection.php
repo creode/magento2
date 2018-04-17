@@ -492,7 +492,7 @@ class Collection implements \IteratorAggregate, \Countable, ArrayInterface, Coll
      *
      * Returns array with results of callback for each item
      *
-     * @param callable $callback
+     * @param string $callback
      * @param array $args
      * @return array
      */

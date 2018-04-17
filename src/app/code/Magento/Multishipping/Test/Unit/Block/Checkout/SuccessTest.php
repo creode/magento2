@@ -56,14 +56,14 @@ class SuccessTest extends \PHPUnit\Framework\TestCase
 
     public function testGetOrderIdsWithoutId()
     {
-        $this->sessionMock->method('getOrderIds')->willReturn(null);
+        $this->sessionMock->expects($this->once())->method('getOrderIds')->with(true)->will($this->returnValue(null));
 
         $this->assertFalse($this->model->getOrderIds());
     }
 
     public function testGetOrderIdsWithEmptyIdsArray()
     {
-        $this->sessionMock->method('getOrderIds')->willReturn([]);
+        $this->sessionMock->expects($this->once())->method('getOrderIds')->with(true)->will($this->returnValue([]));
 
         $this->assertFalse($this->model->getOrderIds());
     }
@@ -71,7 +71,7 @@ class SuccessTest extends \PHPUnit\Framework\TestCase
     public function testGetOrderIds()
     {
         $ids = [100, 102, 103];
-        $this->sessionMock->method('getOrderIds')->willReturn($ids);;
+        $this->sessionMock->expects($this->once())->method('getOrderIds')->with(true)->will($this->returnValue($ids));
 
         $this->assertEquals($ids, $this->model->getOrderIds());
     }

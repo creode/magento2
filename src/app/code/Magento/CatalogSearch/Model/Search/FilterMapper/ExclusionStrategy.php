@@ -7,10 +7,6 @@
 namespace Magento\CatalogSearch\Model\Search\FilterMapper;
 
 use Magento\CatalogSearch\Model\Adapter\Mysql\Filter\AliasResolver;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Indexer\ScopeResolver\IndexScopeResolver as TableResolver;
-use Magento\Framework\Search\Request\Dimension;
-use Magento\Catalog\Model\Indexer\Category\Product\AbstractAction;
 
 /**
  * Strategy which processes exclusions from general rules
@@ -39,26 +35,18 @@ class ExclusionStrategy implements FilterStrategyInterface
     private $validFields = ['price', 'category_ids'];
 
     /**
-     * @var TableResolver
-     */
-    private $tableResolver;
-
-    /**
      * @param \Magento\Framework\App\ResourceConnection $resourceConnection
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param AliasResolver $aliasResolver
-     * @param TableResolver|null $tableResolver
      */
     public function __construct(
         \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        AliasResolver $aliasResolver,
-        TableResolver $tableResolver = null
+        AliasResolver $aliasResolver
     ) {
         $this->resourceConnection = $resourceConnection;
         $this->storeManager = $storeManager;
         $this->aliasResolver = $aliasResolver;
-        $this->tableResolver = $tableResolver ?: ObjectManager::getInstance()->get(TableResolver::class);
     }
 
     /**
@@ -124,18 +112,7 @@ class ExclusionStrategy implements FilterStrategyInterface
         \Magento\Framework\DB\Select $select
     ) {
         $alias = $this->aliasResolver->getAlias($filter);
-
-        $catalogCategoryProductDimension = new Dimension(
-            \Magento\Store\Model\Store::ENTITY,
-            $this->storeManager->getStore()->getId()
-        );
-
-        $tableName = $this->tableResolver->resolve(
-            AbstractAction::MAIN_INDEX_TABLE,
-            [
-                $catalogCategoryProductDimension
-            ]
-        );
+        $tableName = $this->resourceConnection->getTableName('catalog_category_product_index');
         $mainTableAlias = $this->extractTableAliasFromSelect($select);
 
         $select->joinInner(

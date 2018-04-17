@@ -232,10 +232,10 @@ class Tablerate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $this->_importedRows += count($values);
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            $connection->rollBack();
+            $connection->rollback();
             throw new \Magento\Framework\Exception\LocalizedException(__('Unable to import data'), $e);
         } catch (\Exception $e) {
-            $connection->rollBack();
+            $connection->rollback();
             $this->logger->critical($e);
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('Something went wrong while importing table rates.')

@@ -191,7 +191,14 @@ class Save extends \Magento\Backend\App\Action
             }
             $transactionSave->save();
 
-            if (!empty($data['do_shipment'])) {
+            if (isset($shippingResponse) && $shippingResponse->hasErrors()) {
+                $this->messageManager->addError(
+                    __(
+                        'The invoice and the shipment  have been created. ' .
+                        'The shipping label cannot be created now.'
+                    )
+                );
+            } elseif (!empty($data['do_shipment'])) {
                 $this->messageManager->addSuccess(__('You created the invoice and shipment.'));
             } else {
                 $this->messageManager->addSuccess(__('The invoice has been created.'));

@@ -202,7 +202,7 @@ class FileProcessor
     {
         $fileName = ltrim($fileName, '/');
 
-        $dispersionPath = \Magento\MediaStorage\Model\File\Uploader::getDispersionPath($fileName);
+        $dispersionPath = \Magento\MediaStorage\Model\File\Uploader::getDispretionPath($fileName);
         $destinationPath = $this->entityTypeCode . $dispersionPath;
 
         if (!$this->mediaDirectory->create($destinationPath)) {

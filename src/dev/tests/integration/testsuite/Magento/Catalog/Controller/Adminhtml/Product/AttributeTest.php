@@ -128,12 +128,12 @@ class AttributeTest extends \Magento\TestFramework\TestCase\AbstractBackendContr
      */
     public function testWrongAttributeCode()
     {
-        $postData = $this->_getAttributeData() + ['attribute_code' => '_()&&&?'];
+        $postData = $this->_getAttributeData() + ['attribute_id' => '2', 'attribute_code' => '_()&&&?'];
         $this->getRequest()->setPostValue($postData);
         $this->dispatch('backend/catalog/product_attribute/save');
         $this->assertEquals(302, $this->getResponse()->getHttpResponseCode());
         $this->assertContains(
-            'catalog/product_attribute/edit',
+            'catalog/product_attribute/edit/attribute_id/2',
             $this->getResponse()->getHeader('Location')->getFieldValue()
         );
         /** @var \Magento\Framework\Message\Collection $messages */

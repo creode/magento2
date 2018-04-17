@@ -97,8 +97,7 @@ class IoTest extends \PHPUnit\Framework\TestCase
         } else {
             $exceptionMessage = 'Some error renaming file';
             $renameMockEvent = $this->throwException(new FileSystemException(new Phrase($exceptionMessage)));
-            $this->expectException(\Magento\Framework\Exception\FileSystemException::class);
-            $this->expectExceptionMessage($exceptionMessage);
+            $this->expectException(\Magento\Framework\Exception\FileSystemException::class, $exceptionMessage);
         }
 
         $this->_filesystemDriverMock->expects($this->once())

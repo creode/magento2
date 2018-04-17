@@ -36,7 +36,7 @@ class Success extends \Magento\Multishipping\Block\Checkout\AbstractMultishippin
      */
     public function getOrderIds()
     {
-        $ids = $this->_session->getOrderIds();
+        $ids = $this->_session->getOrderIds(true);
         if ($ids && is_array($ids)) {
             return $ids;
         }

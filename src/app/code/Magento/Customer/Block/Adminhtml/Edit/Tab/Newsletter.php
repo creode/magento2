@@ -160,7 +160,7 @@ class Newsletter extends \Magento\Backend\Block\Widget\Form\Generic implements T
             ]
         );
 
-        if ($this->customerAccountManagement->isReadonly($customerId)) {
+        if ($this->customerAccountManagement->isReadOnly($customerId)) {
             $form->getElement('subscription')->setReadonly(true, true);
         }
         $isSubscribed = $subscriber->isSubscribed();

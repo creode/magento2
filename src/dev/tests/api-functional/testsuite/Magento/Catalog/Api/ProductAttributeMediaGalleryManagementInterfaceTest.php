@@ -609,11 +609,9 @@ class ProductAttributeMediaGalleryManagementInterfaceTest extends \Magento\TestF
             'sku' => $productSku,
         ];
         if (TESTS_WEB_API_ADAPTER == self::ADAPTER_SOAP) {
-            $this->expectException('SoapFault');
-            $this->expectExceptionMessage('Requested product doesn\'t exist');
+            $this->expectException('SoapFault', 'Requested product doesn\'t exist');
         } else {
-            $this->expectException('Exception');
-            $this->expectExceptionCode(404);
+            $this->expectException('Exception', '', 404);
         }
         $this->_webApiCall($serviceInfo, $requestData);
     }

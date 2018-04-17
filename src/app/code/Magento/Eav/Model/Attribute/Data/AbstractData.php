@@ -205,7 +205,7 @@ abstract class AbstractData
      */
     public function getExtractedData($index = null)
     {
-        if ($index !== null) {
+        if (!is_null($index)) {
             if (isset($this->_extractedData[$index])) {
                 return $this->_extractedData[$index];
             }
@@ -262,9 +262,9 @@ abstract class AbstractData
      */
     protected function _dateFilterFormat($format = null)
     {
-        if ($format === null) {
+        if (is_null($format)) {
             // get format
-            if ($this->_dateFilterFormat === null) {
+            if (is_null($this->_dateFilterFormat)) {
                 $this->_dateFilterFormat = \IntlDateFormatter::SHORT;
             }
             return $this->_localeDate->getDateFormat($this->_dateFilterFormat);

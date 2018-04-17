@@ -127,7 +127,7 @@ class Bundle
         }
         $options = [];
         foreach ($bundleOptionsData as $key => $optionData) {
-            if (!empty($optionData['delete'])) {
+            if ((bool)$optionData['delete']) {
                 continue;
             }
 

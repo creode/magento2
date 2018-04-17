@@ -341,8 +341,7 @@ class BuilderTest extends \PHPUnit\Framework\TestCase
      */
     public function testConstructorConfigValidation(array $options, $exception, $exceptionMessage)
     {
-        $this->expectException($exception);
-        $this->expectExceptionMessage($exceptionMessage);
+        $this->expectException($exception, $exceptionMessage);
         if (array_key_exists('method', $options)) {
             $options = ['methods' => [$options]];
         }
@@ -363,8 +362,7 @@ class BuilderTest extends \PHPUnit\Framework\TestCase
      */
     public function testAddConfigurationConfigValidation(array $options, $exception, $exceptionMessage)
     {
-        $this->expectException($exception);
-        $this->expectExceptionMessage($exceptionMessage);
+        $this->expectException($exception, $exceptionMessage);
 
         $constraints = [
             ['alias' => 'alias', 'class' => 'Some\Validator\Class', 'options' => null, 'type' => 'entity'],

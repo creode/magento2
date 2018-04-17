@@ -53,10 +53,7 @@ $quote->setCustomerIsGuest(true)
 $quote->getPayment()->setMethod('checkmo');
 $quote->setIsMultiShipping('1');
 $quote->collectTotals();
-
-$quoteRepository = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-    ->create(\Magento\Quote\Api\CartRepositoryInterface::class);
-$quoteRepository->save($quote);
+$quote->save();
 
 /** @var \Magento\Quote\Model\QuoteIdMask $quoteIdMask */
 $quoteIdMask = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()

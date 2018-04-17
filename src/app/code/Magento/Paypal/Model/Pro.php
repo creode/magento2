@@ -258,7 +258,7 @@ class Pro
         }
         $api = $this->getApi()
             ->setAuthorizationId($authTransactionId)
-            ->setIsCaptureComplete($payment->isCaptureFinal($amount))
+            ->setIsCaptureComplete($payment->getShouldCloseParentTransaction())
             ->setAmount($amount);
 
         $order = $payment->getOrder();

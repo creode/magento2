@@ -50,7 +50,6 @@ class ProductAttributesCleanUpTest extends \PHPUnit\Framework\TestCase
      * @magentoDataFixture Magento/Store/_files/website.php
      * @magentoDataFixture Magento/Store/_files/fixture_store_with_catalogsearch_index.php
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
-     * @magentoDbIsolation disabled
      */
     public function testExecute()
     {

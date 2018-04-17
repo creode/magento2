@@ -419,11 +419,7 @@ class CustomerRepositoryTest extends \PHPUnit\Framework\TestCase
             ->method('dispatch')
             ->with(
                 'customer_save_after_data_object',
-                [
-                    'customer_data_object' => $this->customer,
-                    'orig_customer_data_object' => $origCustomer,
-                    'delegate_data' => [],
-                ]
+                ['customer_data_object' => $this->customer, 'orig_customer_data_object' => $origCustomer]
             );
 
         $this->model->save($this->customer);
@@ -650,11 +646,7 @@ class CustomerRepositoryTest extends \PHPUnit\Framework\TestCase
             ->method('dispatch')
             ->with(
                 'customer_save_after_data_object',
-                [
-                    'customer_data_object' => $this->customer,
-                    'orig_customer_data_object' => $origCustomer,
-                    'delegate_data' => [],
-                ]
+                ['customer_data_object' => $this->customer, 'orig_customer_data_object' => $origCustomer]
             );
 
         $this->model->save($this->customer, $passwordHash);

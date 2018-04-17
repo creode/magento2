@@ -53,12 +53,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid
         } elseif ($store) {
             $storeId = (int)$store;
         } else {
-            $storeId = null;
+            $storeId = '';
         }
 
         /** @var $collection \Magento\Reports\Model\ResourceModel\Product\Lowstock\Collection  */
         $collection = $this->_lowstocksFactory->create()->addAttributeToSelect(
             '*'
+        )->setStoreId(
+            $storeId
         )->filterByIsQtyProductTypes()->joinInventoryItem(
             'qty'
         )->useManageStockFilter(

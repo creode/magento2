@@ -243,7 +243,7 @@ define([
                 });
 
             // For collapsible widget only (not tabs or accordion)
-            if (this.header.parent().attr('role') !== 'presentation') {
+            if (this.header.parent().attr('role') != 'presentation') { //eslint-disable-line eqeqeq
                 this.header
                     .parent()
                     .attr('role', 'tablist');
@@ -316,9 +316,9 @@ define([
          * Disable.
          */
         disable: function () {
-            this.options.disabled = true;
             this._off(this.trigger);
             this.forceDeactivate();
+            this.options.disabled = true;
 
             if (this.options.disabledState) {
                 this.element.addClass(this.options.disabledState);
@@ -330,14 +330,12 @@ define([
          * Enable.
          */
         enable: function () {
-            this.options.disabled = false;
             this._on(this.trigger, this.events);
-            this.forceActivate();
+            this.options.disabled = false;
 
             if (this.options.disabledState) {
                 this.element.removeClass(this.options.disabledState);
             }
-            this.trigger.attr('tabIndex', 0);
         },
 
         /**
@@ -519,7 +517,7 @@ define([
                 that = this;
 
             if (url) {
-                that.xhr = $.get({
+                this.xhr = $.get({
                     url: url,
                     dataType: 'html'
                 }, function () {
@@ -535,8 +533,7 @@ define([
                     setTimeout(function () {
                         that.content.html(response);
                     }, 1);
-                });
-                that.xhr.complete(function (jqXHR, status) {
+                }).complete(function (jqXHR, status) {
                     setTimeout(function () {
                         if (status === 'abort') {
                             that.content.stop(false, true);

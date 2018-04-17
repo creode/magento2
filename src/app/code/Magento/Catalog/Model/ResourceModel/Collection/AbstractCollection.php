@@ -140,7 +140,7 @@ class AbstractCollection extends \Magento\Eav\Model\Entity\Collection\AbstractCo
      *
      * @param string $table
      * @param array|int $attributeIds
-     * @return \Magento\Framework\DB\Select
+     * @return \Magento\Eav\Model\Entity\Collection\AbstractCollection
      */
     protected function _getLoadAttributesSelect($table, $attributeIds = [])
     {

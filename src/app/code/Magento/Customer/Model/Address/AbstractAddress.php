@@ -264,7 +264,7 @@ class AbstractAddress extends AbstractExtensibleModel implements AddressModelInt
      *
      * @param array|string $key
      * @param null $value
-     * @return $this
+     * @return \Magento\Framework\DataObject
      */
     public function setData($key, $value = null)
     {

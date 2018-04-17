@@ -600,7 +600,6 @@ class Application
      *
      * @param string $areaCode
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function loadArea($areaCode)
     {
@@ -617,13 +616,7 @@ class Application
             )
         );
         $app = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(\Magento\Framework\App\AreaList::class);
-        $areasForPartialLoading = [
-            \Magento\Framework\App\Area::AREA_GLOBAL,
-            \Magento\Framework\App\Area::AREA_WEBAPI_REST,
-            \Magento\Framework\App\Area::AREA_WEBAPI_SOAP,
-            \Magento\Framework\App\Area::AREA_CRONTAB,
-        ];
-        if (in_array($areaCode, $areasForPartialLoading, true)) {
+        if ($areaCode == \Magento\TestFramework\Application::DEFAULT_APP_AREA) {
             $app->getArea($areaCode)->load(\Magento\Framework\App\Area::PART_CONFIG);
         } else {
             \Magento\TestFramework\Helper\Bootstrap::getInstance()->loadArea($areaCode);

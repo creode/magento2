@@ -207,7 +207,7 @@ class Media extends \Magento\Framework\App\Helper\AbstractHelper
         if ($isSwatch) {
             $image->keepFrame(true);
             $image->keepTransparency(true);
-            $image->backgroundColor([255, 255, 255]);
+            $image->backgroundColor('#FFF');
         }
         return $this;
     }

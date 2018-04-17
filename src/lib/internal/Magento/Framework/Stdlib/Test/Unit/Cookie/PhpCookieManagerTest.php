@@ -48,6 +48,8 @@ namespace Magento\Framework\Stdlib\Test\Unit\Cookie
         const COOKIE_HTTP_ONLY = true;
         const COOKIE_NOT_HTTP_ONLY = false;
         const COOKIE_EXPIRE_END_OF_SESSION = 0;
+        const MAX_NUM_COOKIES = 50;
+        const MAX_COOKIE_SIZE = 4096;
 
         /**
          * Mapping from constant names to functions that handle the assertions.
@@ -531,9 +533,7 @@ namespace Magento\Framework\Stdlib\Test\Unit\Cookie
                 );
 
             $cookieValue = '';
-
-            $cookieManager = $this->cookieManager;
-            for ($i = 0; $i < $cookieManager::MAX_COOKIE_SIZE + 1; $i++) {
+            for ($i = 0; $i < self::MAX_COOKIE_SIZE + 1; $i++) {
                 $cookieValue = $cookieValue . 'a';
             }
 
@@ -561,9 +561,8 @@ namespace Magento\Framework\Stdlib\Test\Unit\Cookie
 
             $userAgent = 'some_user_agent';
 
-            $cookieManager = $this->cookieManager;
-            // Set $cookieManager::MAX_NUM_COOKIES number of cookies in superglobal $_COOKIE.
-            for ($i = count($_COOKIE); $i < $cookieManager::MAX_NUM_COOKIES; $i++) {
+            // Set self::MAX_NUM_COOKIES number of cookies in superglobal $_COOKIE.
+            for ($i = count($_COOKIE); $i < self::MAX_NUM_COOKIES; $i++) {
                 $_COOKIE['test_cookie_' . $i] = self::COOKIE_VALUE . '_' . $i;
             }
 

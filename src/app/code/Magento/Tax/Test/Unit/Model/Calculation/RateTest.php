@@ -46,8 +46,7 @@ class RateTest extends \PHPUnit\Framework\TestCase
      */
     public function testExceptionOfValidation($exceptionMessage, $data)
     {
-        $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
-        $this->expectExceptionMessage($exceptionMessage);
+        $this->expectException(\Magento\Framework\Exception\LocalizedException::class, $exceptionMessage);
         $rate = $this->objectHelper->getObject(
             \Magento\Tax\Model\Calculation\Rate::class,
             ['resource' => $this->resourceMock]

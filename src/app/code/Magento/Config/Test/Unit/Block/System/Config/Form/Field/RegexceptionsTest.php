@@ -128,8 +128,7 @@ class RegexceptionsTest extends \PHPUnit\Framework\TestCase
 
         $this->object->addColumn($wrongColumnName, $this->cellParameters);
 
-        $this->expectException('\Exception');
-        $this->expectExceptionMessage('Wrong column name specified.');
+        $this->expectException('\Exception', 'Wrong column name specified.');
 
         $this->object->renderCellTemplate($columnName);
     }

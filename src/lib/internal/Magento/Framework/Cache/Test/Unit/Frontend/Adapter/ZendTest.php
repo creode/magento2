@@ -80,8 +80,7 @@ class ZendTest extends \PHPUnit\Framework\TestCase
      */
     public function testCleanException($cleaningMode, $expectedErrorMessage)
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage($expectedErrorMessage);
+        $this->expectException('InvalidArgumentException', $expectedErrorMessage);
         $object = new \Magento\Framework\Cache\Frontend\Adapter\Zend($this->createMock(\Zend_Cache_Core::class));
         $object->clean($cleaningMode);
     }

@@ -588,7 +588,7 @@
             _init($box, gOptions);
         });
 
-        $box.on('mousemove', onMousemove);
+        $(document).on('mousemove', onMousemove);
         _init($box, gOptions);
 
     }

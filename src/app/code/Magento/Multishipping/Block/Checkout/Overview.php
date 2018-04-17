@@ -120,7 +120,11 @@ class Overview extends \Magento\Sales\Block\Items\AbstractItems
      */
     public function getPayment()
     {
-        return $this->getCheckout()->getQuote()->getPayment();
+        if (!$this->hasData('payment')) {
+            $payment = new \Magento\Framework\DataObject($this->getRequest()->getPost('payment'));
+            $this->setData('payment', $payment);
+        }
+        return $this->_getData('payment');
     }
 
     /**
@@ -196,9 +200,9 @@ class Overview extends \Magento\Sales\Block\Items\AbstractItems
 
     /**
      * @param Address $address
-     * @return array
+     * @return mixed
      */
-    public function getShippingAddressItems($address): array
+    public function getShippingAddressItems($address)
     {
         return $address->getAllVisibleItems();
     }
@@ -305,7 +309,16 @@ class Overview extends \Magento\Sales\Block\Items\AbstractItems
      */
     public function getVirtualItems()
     {
-        return $this->getBillingAddress()->getAllVisibleItems();
+        $items = [];
+        foreach ($this->getBillingAddress()->getItemsCollection() as $_item) {
+            if ($_item->isDeleted()) {
+                continue;
+            }
+            if ($_item->getProduct()->getIsVirtual() && !$_item->getParentItemId()) {
+                $items[] = $_item;
+            }
+        }
+        return $items;
     }
 
     /**

@@ -41,7 +41,7 @@ class FileResolverTest extends \PHPUnit\Framework\TestCase
 
     public function testGetGlobal()
     {
-        $expected = new \stdClass();
+        $expected = new \StdClass();
         $this->moduleReader
             ->expects($this->once())
             ->method('getConfigurationFiles')
@@ -52,7 +52,7 @@ class FileResolverTest extends \PHPUnit\Framework\TestCase
 
     public function testGetDesign()
     {
-        $expected = new \stdClass();
+        $expected = new \StdClass();
         $this->componentDirSearch->expects($this->once())
             ->method('collectFiles')
             ->with(ComponentRegistrar::THEME, 'etc/file')
@@ -63,7 +63,7 @@ class FileResolverTest extends \PHPUnit\Framework\TestCase
 
     public function testGetDefault()
     {
-        $expected = new \stdClass();
+        $expected = new \StdClass();
         $this->factory->expects($this->once())->method('create')->with([])->willReturn($expected);
         $this->assertSame($expected, $this->object->get('file', 'unknown'));
     }

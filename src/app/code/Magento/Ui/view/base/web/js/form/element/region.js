@@ -35,11 +35,6 @@ define([
                 return;
             }
             option = options[value];
-
-            if (typeof option === 'undefined') {
-                return;
-            }
-
             defaultPostCodeResolver.setUseDefaultPostCode(!option['is_zipcode_optional']);
 
             if (this.skipValidation) {

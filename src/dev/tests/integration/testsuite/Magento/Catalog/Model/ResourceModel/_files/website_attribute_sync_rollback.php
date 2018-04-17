@@ -45,14 +45,8 @@ $store = $storeRepository->get('customstoreview1');
 $storeGroupId = $store->getStoreGroupId();
 $websiteId = $store->getWebsiteId();
 
-try {
-    $product = $productRepository->getById($productId);
-    if ($product->getId()) {
-        $productRepository->delete($product);
-    }
-} catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-    //Product already removed
-}
+$product = $productRepository->getById($productId);
+$productRepository->delete($product);
 
 /**
  * Remove stores by code

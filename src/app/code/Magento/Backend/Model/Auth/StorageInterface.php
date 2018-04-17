@@ -23,7 +23,7 @@ interface StorageInterface
     public function processLogin();
 
     /**
-     * Perform logout specific actions
+     * Perform login specific actions
      *
      * @return $this
      * @abstract

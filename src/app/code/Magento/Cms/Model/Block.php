@@ -6,6 +6,7 @@
 namespace Magento\Cms\Model;
 
 use Magento\Cms\Api\Data\BlockInterface;
+use Magento\Cms\Model\ResourceModel\Block as ResourceCmsBlock;
 use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\Model\AbstractModel;
 
@@ -57,11 +58,6 @@ class Block extends AbstractModel implements BlockInterface, IdentityInterface
     public function beforeSave()
     {
         $needle = 'block_id="' . $this->getId() . '"';
-
-        if ($this->hasDataChanges()) {
-            $this->setUpdateTime(null);
-        }
-
         if (false == strstr($this->getContent(), $needle)) {
             return parent::beforeSave();
         }

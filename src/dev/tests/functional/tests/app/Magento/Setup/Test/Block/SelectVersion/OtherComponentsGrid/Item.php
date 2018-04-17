@@ -21,13 +21,6 @@ class Item extends Block
     private $version = '[ng-change*="setComponentVersion"]';
 
     /**
-     * CSS selector for package name element.
-     *
-     * @var string
-     */
-    private $packageName = 'td:nth-child(2)';
-
-    /**
      * Set version for particular component.
      *
      * @param string $version
@@ -35,15 +28,5 @@ class Item extends Block
     public function setVersion($version)
     {
         $this->_rootElement->find($this->version, Locator::SELECTOR_CSS, 'select')->setValue($version);
-    }
-
-    /**
-     * Returns package name of element.
-     *
-     * @return array|string
-     */
-    public function getPackageName()
-    {
-        return $this->_rootElement->find($this->packageName)->getText();
     }
 }

@@ -25,11 +25,14 @@
             </tr>
         </thead>
         <?php foreach ($_invoice->getAllItems() as $_item): ?>
-            <?php if (!$_item->getOrderItem()->getParentItem()) : ?>
-                <tbody>
-                    <?= $block->getItemHtml($_item) ?>
-                </tbody>
-            <?php endif; ?>
+            <?php
+                if ($_item->getOrderItem()->getParentItem()) {
+                    continue;
+                }
+            ?>
+            <tbody>
+                <?= $block->getItemHtml($_item) ?>
+            </tbody>
         <?php endforeach; ?>
         <tfoot class="order-totals">
             <?= $block->getChildHtml('invoice_totals') ?>

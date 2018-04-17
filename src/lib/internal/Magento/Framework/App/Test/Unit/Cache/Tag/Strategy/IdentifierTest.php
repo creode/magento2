@@ -22,14 +22,13 @@ class IdentifierTest extends \PHPUnit\Framework\TestCase
 
     public function testGetWithScalar()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Provided argument is not an object');
+        $this->expectException(\InvalidArgumentException::class, 'Provided argument is not an object');
         $this->model->getTags('scalar');
     }
 
     public function testGetTagsWithObject()
     {
-        $this->assertEquals([], $this->model->getTags(new \stdClass));
+        $this->assertEquals([], $this->model->getTags(new \StdClass));
     }
 
     public function testGetTagsWithIdentityInterface()

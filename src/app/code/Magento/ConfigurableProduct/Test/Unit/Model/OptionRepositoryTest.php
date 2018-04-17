@@ -356,8 +356,7 @@ class OptionRepositoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testValidateNewOptionData($attributeId, $label, $optionValues, $msg)
     {
-        $this->expectException(\Magento\Framework\Exception\InputException::class);
-        $this->expectExceptionMessage($msg);
+        $this->expectException(\Magento\Framework\Exception\InputException::class, $msg);
         $optionValueMock = $this->getMockBuilder(\Magento\ConfigurableProduct\Api\Data\OptionValueInterface::class)
             ->setMethods(['getValueIndex', 'getPricingValue', 'getIsPercent'])
             ->getMockForAbstractClass();

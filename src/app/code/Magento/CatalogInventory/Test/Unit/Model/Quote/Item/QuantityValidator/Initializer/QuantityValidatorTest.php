@@ -278,11 +278,8 @@ class QuantityValidatorTest extends \PHPUnit\Framework\TestCase
     {
         $optionMock = $this->getMockBuilder(OptionItem::class)
             ->disableOriginalConstructor()
-            ->setMethods(['setHasError', 'getStockStateResult'])
+            ->setMethods(['setHasError'])
             ->getMock();
-        $optionMock->expects($this->once())
-            ->method('getStockStateResult')
-            ->willReturn($this->resultMock);
         $this->stockRegistryMock->expects($this->at(0))
             ->method('getStockItem')
             ->willReturn($this->stockItemMock);
@@ -319,7 +316,7 @@ class QuantityValidatorTest extends \PHPUnit\Framework\TestCase
     {
         $optionMock = $this->getMockBuilder(OptionItem::class)
             ->disableOriginalConstructor()
-            ->setMethods(['setHasError', 'getStockStateResult'])
+            ->setMethods(['setHasError'])
             ->getMock();
         $this->stockRegistryMock->expects($this->at(0))
             ->method('getStockItem')
@@ -327,9 +324,6 @@ class QuantityValidatorTest extends \PHPUnit\Framework\TestCase
         $this->stockRegistryMock->expects($this->at(1))
             ->method('getStockStatus')
             ->willReturn($this->stockStatusMock);
-        $optionMock->expects($this->once())
-            ->method('getStockStateResult')
-            ->willReturn($this->resultMock);
         $options = [$optionMock];
         $this->createInitialStub(1);
         $this->setUpStubForQuantity(1, true);
@@ -360,15 +354,12 @@ class QuantityValidatorTest extends \PHPUnit\Framework\TestCase
     {
         $optionMock = $this->getMockBuilder(OptionItem::class)
             ->disableOriginalConstructor()
-            ->setMethods(['setHasError', 'getStockStateResult'])
+            ->setMethods(['setHasError'])
             ->getMock();
         $quoteItem = $this->getMockBuilder(Item::class)
             ->disableOriginalConstructor()
             ->setMethods(['getItemId', 'getErrorInfos'])
             ->getMock();
-        $optionMock->expects($this->once())
-            ->method('getStockStateResult')
-            ->willReturn($this->resultMock);
         $this->stockRegistryMock->expects($this->at(0))
             ->method('getStockItem')
             ->willReturn($this->stockItemMock);

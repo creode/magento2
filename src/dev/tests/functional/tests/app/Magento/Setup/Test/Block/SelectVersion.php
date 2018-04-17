@@ -43,23 +43,7 @@ class SelectVersion extends Form
      *
      * @var string
      */
-    private $otherComponentsGrid = '.admin__data-grid-outer-wrap';
-
-    /**
-     * @var string
-     */
-    private $empty = '[ng-show="componentsProcessed && total == 0"]';
-
-    /**
-     * @var string
-     */
-    private $waitEmpty =
-        '//div[contains(@ng-show, "componentsProcessed && total") and not(contains(@class,"ng-hide"))]';
-
-    /**
-     * @var OtherComponentsGrid
-     */
-    private $otherComponentGrid;
+    private $otherComponentsGrid = '.admin__data-grid-wrap[ng-show="componentsProcessed"]';
 
     /**
      * Click on 'Next' button.
@@ -109,33 +93,7 @@ class SelectVersion extends Form
     {
         $this->_rootElement->find("[for=yesUpdateComponents]")->click();
         $this->waitForElementNotVisible("[ng-show=\"!componentsProcessed\"");
-
-        if (!$this->isComponentsEmpty()) {
-            $otherComponentGrid = $this->getOtherComponentsGrid();
-            $otherComponentGrid->setItemsPerPage(200);
-            $otherComponentGrid->setVersions($packages);
-        }
-    }
-
-    /**
-     * Check that grid is empty.
-     *
-     * @return bool
-     */
-    public function isComponentsEmpty()
-    {
-        $this->waitForElementVisible($this->waitEmpty, Locator::SELECTOR_XPATH);
-        return $this->_rootElement->find($this->empty)->isVisible();
-    }
-
-    /**
-     * Returns selected packages.
-     *
-     * @return array
-     */
-    public function getSelectedPackages()
-    {
-        return $this->getOtherComponentsGrid()->getSelectedPackages();
+        $this->getOtherComponentsGrid()->setVersions($packages);
     }
 
     /**
@@ -145,12 +103,9 @@ class SelectVersion extends Form
      */
     private function getOtherComponentsGrid()
     {
-        if (!isset($this->otherComponentGrid)) {
-            $this->otherComponentGrid = $this->blockFactory->create(
-                OtherComponentsGrid::class,
-                ['element' => $this->_rootElement->find($this->otherComponentsGrid)]
-            );
-        }
-        return $this->otherComponentGrid;
+        return $this->blockFactory->create(
+            OtherComponentsGrid::class,
+            ['element' => $this->_rootElement->find($this->otherComponentsGrid)]
+        );
     }
 }

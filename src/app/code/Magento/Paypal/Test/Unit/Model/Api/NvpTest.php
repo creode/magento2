@@ -126,8 +126,7 @@ class NvpTest extends \PHPUnit\Framework\TestCase
     public function testCall($response, $processableErrors, $exception, $exceptionMessage = '', $exceptionCode = null)
     {
         if (isset($exception)) {
-            $this->expectException($exception);
-            $this->expectExceptionMessage($exceptionMessage, $exceptionCode);
+            $this->expectException($exception, $exceptionMessage, $exceptionCode);
         }
         $this->curl->expects($this->once())
             ->method('read')

@@ -12,7 +12,6 @@ use Magento\Setup\Model\PackagesAuth;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -20,8 +19,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class SampleDataDeployCommand extends Command
 {
-    const OPTION_NO_UPDATE = 'no-update';
-
     /**
      * @var \Magento\Framework\Filesystem
      */
@@ -69,12 +66,6 @@ class SampleDataDeployCommand extends Command
     {
         $this->setName('sampledata:deploy')
             ->setDescription('Deploy sample data modules');
-        $this->addOption(
-            self::OPTION_NO_UPDATE,
-            null,
-            InputOption::VALUE_NONE,
-            'Update composer.json without executing composer update'
-        );
         parent::configure();
     }
 
@@ -89,9 +80,6 @@ class SampleDataDeployCommand extends Command
         if (!empty($sampleDataPackages)) {
             $baseDir = $this->filesystem->getDirectoryRead(DirectoryList::ROOT)->getAbsolutePath();
             $commonArgs = ['--working-dir' => $baseDir, '--no-progress' => 1];
-            if ($input->getOption(self::OPTION_NO_UPDATE)) {
-                $commonArgs['--no-update'] = 1;
-            }
             $packages = [];
             foreach ($sampleDataPackages as $name => $version) {
                 $packages[] = "$name:$version";

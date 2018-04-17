@@ -17,7 +17,6 @@ use Magento\Framework\Webapi\Exception as WebapiException;
 use Magento\Webapi\Model\Soap\Config as SoapConfig;
 use Magento\Framework\Reflection\MethodsMap;
 use Magento\Webapi\Model\ServiceMetadata;
-use Magento\Webapi\Model\UrlDecoder;
 
 /**
  * Handler of requests to SOAP server.
@@ -71,11 +70,8 @@ class Handler
     protected $methodsMapProcessor;
 
     /**
-     * @var UrlDecoder
-     */
-    private $urlDecoder;
-
-    /**
+     * Initialize dependencies.
+     *
      * @param SoapRequest $request
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param SoapConfig $apiConfig
@@ -84,7 +80,6 @@ class Handler
      * @param ServiceInputProcessor $serviceInputProcessor
      * @param DataObjectProcessor $dataObjectProcessor
      * @param MethodsMap $methodsMapProcessor
-     * @param UrlDecoder $urlDecoder
      */
     public function __construct(
         SoapRequest $request,
@@ -94,8 +89,7 @@ class Handler
         SimpleDataObjectConverter $dataObjectConverter,
         ServiceInputProcessor $serviceInputProcessor,
         DataObjectProcessor $dataObjectProcessor,
-        MethodsMap $methodsMapProcessor,
-        UrlDecoder $urlDecoder = null
+        MethodsMap $methodsMapProcessor
     ) {
         $this->_request = $request;
         $this->_objectManager = $objectManager;
@@ -105,7 +99,6 @@ class Handler
         $this->serviceInputProcessor = $serviceInputProcessor;
         $this->_dataObjectProcessor = $dataObjectProcessor;
         $this->methodsMapProcessor = $methodsMapProcessor;
-        $this->urlDecoder = $urlDecoder ?: \Magento\Framework\App\ObjectManager::getInstance()->get(UrlDecoder::class);
     }
 
     /**
@@ -157,7 +150,6 @@ class Handler
         /** SoapServer wraps parameters into array. Thus this wrapping should be removed to get access to parameters. */
         $arguments = reset($arguments);
         $arguments = $this->_dataObjectConverter->convertStdObjectToArray($arguments, true);
-        $arguments = $this->urlDecoder->decodeParams($arguments);
         return $this->serviceInputProcessor->process($serviceClass, $serviceMethod, $arguments);
     }
 

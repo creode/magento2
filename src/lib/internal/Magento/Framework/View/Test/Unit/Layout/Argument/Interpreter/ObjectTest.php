@@ -49,8 +49,7 @@ class ObjectTest extends \PHPUnit\Framework\TestCase
      */
     public function testEvaluateWrongClass($input, $expectedException, $expectedExceptionMessage)
     {
-        $this->expectException($expectedException);
-        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectException($expectedException, $expectedExceptionMessage);
         $self = $this;
         $this->_objectManager->expects($this->any())->method('create')->willReturnCallback(
             function ($className) use ($self) {

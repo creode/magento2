@@ -766,6 +766,7 @@ class File extends \Magento\Framework\App\Helper\AbstractHelper
         'xxyz' => 'chemical/x-xyz',
         'xzaz' => 'application/vnd.zzazz.deck+xml',
         'xzip' => 'application/zip',
-        'xzmm' => 'application/vnd.handheld-entertainment+xml'
+        'xzmm' => 'application/vnd.handheld-entertainment+xml',
+        'xodt' => 'application/x-vnd.oasis.opendocument.spreadsheet',
     ];
 }

@@ -87,13 +87,10 @@ class Storage
                 $scopeId,
                 $fieldData->getFieldConfig()
             );
-
-            if ($value === null) {
-                $value = '';
+            if ($value !== null) {
+                $fieldData->setValue($value);
             }
-            $fieldData->setValue($value);
         }
-
         return $designConfig;
     }
 

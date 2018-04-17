@@ -5,12 +5,13 @@
  */
 namespace Magento\Customer\Test\Unit\Ui\Component\Listing\Column;
 
-use Magento\Customer\Model\AccountConfirmation;
+use Magento\Customer\Model\AccountManagement;
 use Magento\Customer\Ui\Component\Listing\Column\Confirmation;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponent\Processor;
 use Magento\Framework\View\Element\UiComponentFactory;
+use Magento\Store\Model\ScopeInterface;
 
 class ConfirmationTest extends \PHPUnit\Framework\TestCase
 {
@@ -39,11 +40,6 @@ class ConfirmationTest extends \PHPUnit\Framework\TestCase
      */
     protected $processor;
 
-    /**
-     * @var AccountConfirmation|\PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $accountConfirmation;
-
     public function setup()
     {
         $this->processor = $this->getMockBuilder(\Magento\Framework\View\Element\UiComponent\Processor::class)
@@ -64,15 +60,12 @@ class ConfirmationTest extends \PHPUnit\Framework\TestCase
         $this->scopeConfig = $this->getMockBuilder(\Magento\Framework\App\Config\ScopeConfigInterface::class)
             ->getMockForAbstractClass();
 
-        $this->accountConfirmation = $this->createMock(AccountConfirmation::class);
-
         $this->confirmation = new Confirmation(
             $this->context,
             $this->uiComponentFactory,
             $this->scopeConfig,
             [],
-            [],
-            $this->accountConfirmation
+            []
         );
     }
 
@@ -88,17 +81,12 @@ class ConfirmationTest extends \PHPUnit\Framework\TestCase
         $expected
     ) {
         $websiteId = 1;
-        $customerId = 1;
-        $customerEmail = 'customer@example.com';
 
         $dataSource = [
             'data' => [
                 'items' => [
                     [
-                        'id_field_name' => 'entity_id',
-                        'entity_id' => $customerId,
                         'confirmation' => $confirmation,
-                        'email' => $customerEmail,
                         'website_id' => [
                             $websiteId,
                         ],
@@ -112,9 +100,9 @@ class ConfirmationTest extends \PHPUnit\Framework\TestCase
             ->with($this->confirmation)
             ->willReturnSelf();
 
-        $this->accountConfirmation->expects($this->once())
-            ->method('isConfirmationRequired')
-            ->with($websiteId, $customerId, $customerEmail)
+        $this->scopeConfig->expects($this->once())
+            ->method('getValue')
+            ->with(AccountManagement::XML_PATH_IS_CONFIRM, ScopeInterface::SCOPE_WEBSITES, $websiteId)
             ->willReturn($isConfirmationRequired);
         
         $this->confirmation->setData('name', 'confirmation');

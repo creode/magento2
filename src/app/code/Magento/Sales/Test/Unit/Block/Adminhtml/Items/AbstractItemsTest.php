@@ -84,7 +84,7 @@ class AbstractItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetItemRendererThrowsExceptionForNonexistentRenderer()
     {
-        $renderer = $this->createMock(\stdClass::class);
+        $renderer = $this->createMock(\StdClass::class);
         $layout = $this->createPartialMock(
             \Magento\Framework\View\Layout::class,
             ['getChildName', 'getBlock', '__wakeup']

@@ -224,14 +224,6 @@ define([
             return this;
         },
 
-        /** @inheritdoc */
-        destroy: function () {
-            if (this.dnd()) {
-                this.dnd().destroy();
-            }
-            this._super();
-        },
-
         /**
          * Calls 'initObservable' of parent
          *
@@ -541,8 +533,7 @@ define([
          * Init header elements
          */
         initHeader: function () {
-            var labels = [],
-                data;
+            var data;
 
             if (!this.labels().length) {
                 _.each(this.childTemplate.children, function (cell) {
@@ -556,9 +547,8 @@ define([
                         sortOrder: cell.config.sortOrder
                     });
 
-                    labels.push(data);
+                    this.labels.push(data);
                 }, this);
-                this.labels(_.sortBy(labels, 'sortOrder'));
             }
         },
 

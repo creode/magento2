@@ -19,32 +19,22 @@ class ValidationMessage
 
     /**
      * @var \Magento\Framework\Locale\CurrencyInterface
-     * @deprecated since 101.0.0
      */
     private $currency;
-
-    /**
-     * @var \Magento\Framework\Pricing\Helper\Data
-     */
-    private $priceHelper;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Locale\CurrencyInterface $currency
-     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\Locale\CurrencyInterface $currency,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper = null
+        \Magento\Framework\Locale\CurrencyInterface $currency
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->currency = $currency;
-        $this->priceHelper = $priceHelper ?: \Magento\Framework\App\ObjectManager::getInstance()
-            ->get(\Magento\Framework\Pricing\Helper\Data::class);
     }
 
     /**
@@ -60,11 +50,13 @@ class ValidationMessage
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
         if (!$message) {
-            $minimumAmount =  $this->priceHelper->currency($this->scopeConfig->getValue(
-                'sales/minimum_order/amount',
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-            ), true, false);
-
+            $currencyCode = $this->storeManager->getStore()->getCurrentCurrencyCode();
+            $minimumAmount = $this->currency->getCurrency($currencyCode)->toCurrency(
+                $this->scopeConfig->getValue(
+                    'sales/minimum_order/amount',
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                )
+            );
             $message = __('Minimum order amount is %1', $minimumAmount);
         } else {
             //Added in order to address the issue: https://github.com/magento/magento2/issues/8287

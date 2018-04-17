@@ -124,7 +124,6 @@ class Reader extends \Magento\Framework\Config\Reader\Filesystem
      * Processing nodes of the document before merging
      *
      * @param string $content
-     * @throws \Magento\Framework\Config\Dom\ValidationException
      * @return string
      */
     protected function processingDocument($content)
@@ -132,12 +131,7 @@ class Reader extends \Magento\Framework\Config\Reader\Filesystem
         $object = new DataObject();
         $document = new \DOMDocument();
 
-        try {
-            $document->loadXML($content);
-        } catch (\Exception $e) {
-            throw new \Magento\Framework\Config\Dom\ValidationException($e->getMessage());
-        }
-
+        $document->loadXML($content);
         $this->compiler->compile($document->documentElement, $object, $object);
 
         return $document->saveXML();

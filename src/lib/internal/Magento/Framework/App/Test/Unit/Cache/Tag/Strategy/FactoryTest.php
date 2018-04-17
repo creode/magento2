@@ -49,14 +49,13 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
 
     public function testGetStrategyWithScalar()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Provided argument is not an object');
+        $this->expectException(\InvalidArgumentException::class, 'Provided argument is not an object');
         $this->model->getStrategy('some scalar');
     }
 
     public function testGetStrategyWithObject()
     {
-        $this->assertEquals($this->dummyStrategy, $this->model->getStrategy(new \stdClass));
+        $this->assertEquals($this->dummyStrategy, $this->model->getStrategy(new \StdClass));
     }
 
     public function testGetStrategyWithIdentityInterface()

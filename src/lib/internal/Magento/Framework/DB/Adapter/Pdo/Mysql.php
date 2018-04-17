@@ -423,22 +423,6 @@ class Mysql extends \Zend_Db_Adapter_Pdo_Mysql implements AdapterInterface
     }
 
     /**
-     * Create new database connection
-     *
-     * @return \PDO
-     */
-    private function createConnection()
-    {
-        $connection = new \PDO(
-            $this->_dsn(),
-            $this->_config['username'],
-            $this->_config['password'],
-            $this->_config['driver_options']
-        );
-        return $connection;
-    }
-
-    /**
      * Run RAW Query
      *
      * @param string $sql
@@ -2010,11 +1994,11 @@ class Mysql extends \Zend_Db_Adapter_Pdo_Mysql implements AdapterInterface
         }
 
         switch ($strategy) {
-            case self::REPLACE:
+            case self::INSERT_ON_DUPLICATE:
                 $query = $this->_getReplaceSqlQuery($table, $columns, $values);
                 break;
             default:
-                $query = $this->_getInsertSqlQuery($table, $columns, $values, $strategy);
+                $query = $this->_getInsertSqlQuery($table, $columns, $values);
         }
 
         // execute the statement and return the number of affected rows
@@ -2087,12 +2071,7 @@ class Mysql extends \Zend_Db_Adapter_Pdo_Mysql implements AdapterInterface
             implode(",\n", $sqlFragment),
             implode(" ", $tableOptions)
         );
-
-        if ($this->getTransactionLevel() > 0) {
-            $result = $this->createConnection()->query($sql);
-        } else {
-            $result = $this->query($sql);
-        }
+        $result = $this->query($sql);
         $this->resetDdlCache($table->getName(), $table->getSchema());
 
         return $result;
@@ -2516,11 +2495,7 @@ class Mysql extends \Zend_Db_Adapter_Pdo_Mysql implements AdapterInterface
     {
         $table = $this->quoteIdentifier($this->_getTableName($tableName, $schemaName));
         $query = 'DROP TABLE IF EXISTS ' . $table;
-        if ($this->getTransactionLevel() > 0) {
-            $this->createConnection()->query($query);
-        } else {
-            $this->query($query);
-        }
+        $this->query($query);
         $this->resetDdlCache($tableName, $schemaName);
         return true;
     }
@@ -2596,12 +2571,8 @@ class Mysql extends \Zend_Db_Adapter_Pdo_Mysql implements AdapterInterface
         $newTable = $this->_getTableName($newTableName, $schemaName);
 
         $query = sprintf('ALTER TABLE %s RENAME TO %s', $oldTable, $newTable);
+        $this->query($query);
 
-        if ($this->getTransactionLevel() > 0) {
-            $this->createConnection()->query($query);
-        } else {
-            $this->query($query);
-        }
         $this->resetDdlCache($oldTableName, $schemaName);
 
         return true;
@@ -3670,18 +3641,16 @@ class Mysql extends \Zend_Db_Adapter_Pdo_Mysql implements AdapterInterface
      * @param string $tableName
      * @param array $columns
      * @param array $values
-     * @param null|int $strategy
      * @return string
      */
-    protected function _getInsertSqlQuery($tableName, array $columns, array $values, $strategy = null)
+    protected function _getInsertSqlQuery($tableName, array $columns, array $values)
     {
         $tableName = $this->quoteIdentifier($tableName, true);
         $columns   = array_map([$this, 'quoteIdentifier'], $columns);
         $columns   = implode(',', $columns);
         $values    = implode(', ', $values);
-        $strategy = $strategy === self::INSERT_IGNORE ? 'IGNORE' : '';
 
-        $insertSql = sprintf('INSERT %s INTO %s (%s) VALUES %s', $strategy, $tableName, $columns, $values);
+        $insertSql = sprintf('INSERT INTO %s (%s) VALUES %s', $tableName, $columns, $values);
 
         return $insertSql;
     }

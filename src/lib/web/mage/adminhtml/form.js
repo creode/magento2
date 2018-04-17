@@ -386,7 +386,7 @@ define([
          * @param {Object} config
          */
         initialize: function (elementsMap, config) {
-            var idTo, idFrom, values, fromId, radioFrom;
+            var idTo, idFrom;
 
             if (config) {
                 this._config = config;
@@ -400,21 +400,10 @@ define([
                             'change',
                             this.trackChange.bindAsEventListener(this, idTo, elementsMap[idTo])
                         );
+                        this.trackChange(null, idTo, elementsMap[idTo]);
                     } else {
-                        // Check if radio button
-                        values = elementsMap[idTo][idFrom].values;
-                        fromId = $(idFrom + values[0]);
-                        radioFrom = fromId ? $$('[name="' + fromId.name + '"]') : false;
-
-                        if (radioFrom) {
-                            radioFrom.invoke(
-                                'on',
-                                'change',
-                                this.trackChange.bindAsEventListener(this, idTo, elementsMap[idTo])
-                            );
-                        }
+                        this.trackChange(null, idTo, elementsMap[idTo]);
                     }
-                    this.trackChange(null, idTo, elementsMap[idTo]);
                 }
             }
         },
@@ -439,7 +428,7 @@ define([
             // define whether the target should show up
             var shouldShowUp = true,
                 idFrom, from, values, isInArray, isNegative, headElement, isInheritCheckboxChecked, target, inputs,
-                isAnInputOrSelect, currentConfig, rowElement, fromId, radioFrom;
+                isAnInputOrSelect, currentConfig,rowElement;
 
             for (idFrom in valuesFrom) { //eslint-disable-line guard-for-in
                 from = $(idFrom);
@@ -450,17 +439,6 @@ define([
                     isNegative = valuesFrom[idFrom].negative;
 
                     if (!from || isInArray && isNegative || !isInArray && !isNegative) {
-                        shouldShowUp = false;
-                    }
-                // Check if radio button
-                } else {
-                    values = valuesFrom[idFrom].values;
-                    fromId = $(idFrom + values[0]);
-                    radioFrom = fromId ? $$('[name="' + fromId.name + '"]:checked') : [];
-                    isInArray = radioFrom.length > 0 && values.indexOf(radioFrom[0].value) !== -1;
-                    isNegative = valuesFrom[idFrom].negative;
-
-                    if (!radioFrom || isInArray && isNegative || !isInArray && !isNegative) {
                         shouldShowUp = false;
                     }
                 }

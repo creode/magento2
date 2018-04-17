@@ -6,10 +6,6 @@
 
 namespace Magento\CatalogRule\Model\Indexer;
 
-use Magento\CatalogRule\Model\Indexer\IndexerTableSwapperInterface as TableSwapper;
-use Magento\Catalog\Model\ResourceModel\Indexer\ActiveTableSwitcher;
-use Magento\Framework\App\ObjectManager;
-
 /**
  * Reindex rule relations with products.
  */
@@ -21,25 +17,20 @@ class ReindexRuleProduct
     private $resource;
 
     /**
-     * @var TableSwapper
+     * @var \Magento\Catalog\Model\ResourceModel\Indexer\ActiveTableSwitcher
      */
-    private $tableSwapper;
+    private $activeTableSwitcher;
 
     /**
      * @param \Magento\Framework\App\ResourceConnection $resource
-     * @param ActiveTableSwitcher $activeTableSwitcher
-     * @param TableSwapper|null $tableSwapper
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @param \Magento\Catalog\Model\ResourceModel\Indexer\ActiveTableSwitcher $activeTableSwitcher
      */
     public function __construct(
         \Magento\Framework\App\ResourceConnection $resource,
-        ActiveTableSwitcher $activeTableSwitcher,
-        TableSwapper $tableSwapper = null
+        \Magento\Catalog\Model\ResourceModel\Indexer\ActiveTableSwitcher $activeTableSwitcher
     ) {
         $this->resource = $resource;
-        $this->tableSwapper = $tableSwapper ??
-            ObjectManager::getInstance()->get(TableSwapper::class);
+        $this->activeTableSwitcher = $activeTableSwitcher;
     }
 
     /**
@@ -74,7 +65,7 @@ class ReindexRuleProduct
         $indexTable = $this->resource->getTableName('catalogrule_product');
         if ($useAdditionalTable) {
             $indexTable = $this->resource->getTableName(
-                $this->tableSwapper->getWorkingTableName('catalogrule_product')
+                $this->activeTableSwitcher->getAdditionalTableName('catalogrule_product')
             );
         }
 

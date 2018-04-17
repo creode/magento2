@@ -503,7 +503,6 @@ class Config
         }
 
         if (isset($this->attributes[$entityTypeCode][$code])) {
-            \Magento\Framework\Profiler::stop('EAV: ' . __METHOD__);
             return $this->attributes[$entityTypeCode][$code];
         }
 

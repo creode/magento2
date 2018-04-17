@@ -32,12 +32,6 @@ define([
             } else if ($(el)[component]) {
                 $(el)[component](config);
             }
-        }, function (error) {
-            if ('console' in window && typeof window.console.error === 'function') {
-                console.error(error);
-            }
-
-            return true;
         });
     }
 

@@ -5,7 +5,6 @@
  */
 namespace Magento\Setup\Test\Unit\Console\Command;
 
-use Magento\Framework\App\Console\MaintenanceModeEnabler;
 use Magento\Setup\Console\Command\ModuleUninstallCommand;
 use Magento\Setup\Model\ModuleUninstaller;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -159,8 +158,7 @@ class ModuleUninstallCommandTest extends \PHPUnit\Framework\TestCase
             $objectManagerProvider,
             $this->uninstallCollector,
             $this->moduleUninstaller,
-            $this->moduleRegistryUninstaller,
-            new MaintenanceModeEnabler($this->maintenanceMode)
+            $this->moduleRegistryUninstaller
         );
         $this->question = $this->createMock(\Symfony\Component\Console\Helper\QuestionHelper::class);
         $this->question

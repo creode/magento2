@@ -293,17 +293,11 @@ class Address extends \Magento\Sales\Block\Adminhtml\Order\Create\Form\AbstractF
 
     /**
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $countryElement
-     * @param string|int $storeId
-     *
      * @return void
      */
-    protected function processCountryOptions(
-        \Magento\Framework\Data\Form\Element\AbstractElement $countryElement,
-        $storeId = null
-    ) {
-        if ($storeId === null) {
-            $storeId = $this->getBackendQuoteSession()->getStoreId();
-        }
+    private function processCountryOptions(\Magento\Framework\Data\Form\Element\AbstractElement $countryElement)
+    {
+        $storeId = $this->getBackendQuoteSession()->getStoreId();
         $options = $this->getCountriesCollection()
             ->loadByStore($storeId)
             ->toOptionArray();

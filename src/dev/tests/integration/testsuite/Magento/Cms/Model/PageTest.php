@@ -6,13 +6,17 @@
 namespace Magento\Cms\Model;
 
 use Magento\Cms\Api\PageRepositoryInterface;
-use Magento\Framework\Stdlib\DateTime\DateTime;
 
 /**
  * @magentoAppArea adminhtml
  */
 class PageTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var \Magento\Cms\Model\Page
+     */
+    protected $model;
+
     protected function setUp()
     {
         $user = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
@@ -47,14 +51,15 @@ class PageTest extends \PHPUnit\Framework\TestCase
      */
     public function testUpdateTime()
     {
+        $updateTime = '2016-09-01 00:00:00';
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         /** @var \Magento\Cms\Model\Page $page */
         $page = $objectManager->create(\Magento\Cms\Model\Page::class);
         $page->setData(['title' => 'Test', 'stores' => [1]]);
+        $page->setUpdateTime($updateTime);
         $page->save();
         $page = $objectManager->get(PageRepositoryInterface::class)->getById($page->getId());
-        $date = $objectManager->get(DateTime::class)->date();
-        $this->assertEquals($date, $page->getUpdateTime());
+        $this->assertEquals($updateTime, $page->getUpdateTime());
     }
 
     public function generateIdentifierFromTitleDataProvider()

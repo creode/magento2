@@ -36,41 +36,31 @@ class CustomOptionPrice extends AbstractPrice implements CustomOptionPriceInterf
     protected $excludeAdjustment = null;
 
     /**
-     * @var CustomOptionPriceCalculator
-     */
-    private $customOptionPriceCalculator;
-
-    /**
      * @param SaleableInterface $saleableItem
      * @param float $quantity
      * @param CalculatorInterface $calculator
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
-     * @param array|null $excludeAdjustment
-     * @param CustomOptionPriceCalculator|null $customOptionPriceCalculator
+     * @param array $excludeAdjustment
      */
     public function __construct(
         SaleableInterface $saleableItem,
         $quantity,
         CalculatorInterface $calculator,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
-        $excludeAdjustment = null,
-        CustomOptionPriceCalculator $customOptionPriceCalculator = null
+        $excludeAdjustment = null
     ) {
         parent::__construct($saleableItem, $quantity, $calculator, $priceCurrency);
         $this->excludeAdjustment = $excludeAdjustment;
-        $this->customOptionPriceCalculator = $customOptionPriceCalculator
-            ?? \Magento\Framework\App\ObjectManager::getInstance()->get(CustomOptionPriceCalculator::class);
     }
 
     /**
      * Get minimal and maximal option values
      *
-     * @param string $priceCode
      * @return array
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function getValue($priceCode = \Magento\Catalog\Pricing\Price\BasePrice::PRICE_CODE)
+    public function getValue()
     {
         $optionValues = [];
         $options = $this->product->getOptions();
@@ -95,8 +85,7 @@ class CustomOptionPrice extends AbstractPrice implements CustomOptionPriceInterf
                 } else {
                     /** @var $optionValue \Magento\Catalog\Model\Product\Option\Value */
                     foreach ($optionItem->getValues() as $optionValue) {
-                        $price =
-                            $this->customOptionPriceCalculator->getOptionPriceByPriceCode($optionValue, $priceCode);
+                        $price = $optionValue->getPrice($optionValue->getPriceType() == Value::TYPE_PERCENT);
                         if ($min === null) {
                             $min = $price;
                         } elseif ($price < $min) {
@@ -144,13 +133,12 @@ class CustomOptionPrice extends AbstractPrice implements CustomOptionPriceInterf
      * Return the minimal or maximal price for custom options
      *
      * @param bool $getMin
-     * @param string $priceCode
      * @return float
      */
-    public function getCustomOptionRange($getMin, $priceCode = \Magento\Catalog\Pricing\Price\BasePrice::PRICE_CODE)
+    public function getCustomOptionRange($getMin)
     {
         $optionValue = 0.;
-        $options = $this->getValue($priceCode);
+        $options = $this->getValue();
         foreach ($options as $option) {
             if ($getMin) {
                 $optionValue += $option['min'];

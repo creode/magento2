@@ -2522,6 +2522,5 @@ return [
     ['getBunchImages', 'Magento\CatalogImportExport\Model\Import\Product'],
     ['_isAttributeValueEmpty', 'Magento\Catalog\Model\ResourceModel\AbstractResource'],
     ['var_dump', ''],
-    ['each', ''],
     ['isOrderIncrementIdUsed', 'Magento\Quote\Model\ResourceModel\Quote', 'Magento\Sales\Model\OrderIncrementIdChecker::isIncrementIdUsed']
 ];

@@ -52,24 +52,14 @@ class RowCustomizerTest extends \PHPUnit\Framework\TestCase
      */
     protected $selection;
 
-    /** @var \Magento\Framework\App\ScopeResolverInterface|\PHPUnit_Framework_MockObject_MockObject */
-    private $scopeResolver;
-
     /**
      * Set up
      */
     protected function setUp()
     {
         $this->objectManagerHelper = new ObjectManagerHelper($this);
-        $this->scopeResolver = $this->getMockBuilder(\Magento\Framework\App\ScopeResolverInterface::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getScope'])
-            ->getMockForAbstractClass();
         $this->rowCustomizerMock = $this->objectManagerHelper->getObject(
-            \Magento\BundleImportExport\Model\Export\RowCustomizer::class,
-            [
-                'scopeResolver' => $this->scopeResolver
-            ]
+            \Magento\BundleImportExport\Model\Export\RowCustomizer::class
         );
         $this->productResourceCollection = $this->createPartialMock(
             \Magento\Catalog\Model\ResourceModel\Product\Collection::class,
@@ -82,8 +72,6 @@ class RowCustomizerTest extends \PHPUnit\Framework\TestCase
                 'getPriceType',
                 'getShipmentType',
                 'getSkuType',
-                'getSku',
-                'getStoreIds',
                 'getPriceView',
                 'getWeightType',
                 'getTypeInstance',
@@ -91,7 +79,6 @@ class RowCustomizerTest extends \PHPUnit\Framework\TestCase
                 'getSelectionsCollection'
             ]
         );
-        $this->product->expects($this->any())->method('getStoreIds')->willReturn([1]);
         $this->product->expects($this->any())->method('getEntityId')->willReturn(1);
         $this->product->expects($this->any())->method('getPriceType')->willReturn(1);
         $this->product->expects($this->any())->method('getShipmentType')->willReturn(1);
@@ -101,20 +88,19 @@ class RowCustomizerTest extends \PHPUnit\Framework\TestCase
         $this->product->expects($this->any())->method('getTypeInstance')->willReturnSelf();
         $this->optionsCollection = $this->createPartialMock(
             \Magento\Bundle\Model\ResourceModel\Option\Collection::class,
-            ['setOrder', 'getItems']
+            ['setOrder', 'getIterator']
         );
         $this->product->expects($this->any())->method('getOptionsCollection')->willReturn($this->optionsCollection);
         $this->optionsCollection->expects($this->any())->method('setOrder')->willReturnSelf();
         $this->option = $this->createPartialMock(
             \Magento\Bundle\Model\Option::class,
-            ['getId', 'getOptionId', 'getTitle', 'getType', 'getRequired']
+            ['getId', 'getTitle', 'getType', 'getRequired']
         );
         $this->option->expects($this->any())->method('getId')->willReturn(1);
-        $this->option->expects($this->any())->method('getOptionId')->willReturn(1);
         $this->option->expects($this->any())->method('getTitle')->willReturn('title');
         $this->option->expects($this->any())->method('getType')->willReturn(1);
         $this->option->expects($this->any())->method('getRequired')->willReturn(1);
-        $this->optionsCollection->expects($this->any())->method('getItems')->will(
+        $this->optionsCollection->expects($this->any())->method('getIterator')->will(
             $this->returnValue(new \ArrayIterator([$this->option]))
         );
         $this->selection = $this->createPartialMock(
@@ -136,7 +122,6 @@ class RowCustomizerTest extends \PHPUnit\Framework\TestCase
         $this->product->expects($this->any())->method('getSelectionsCollection')->willReturn(
             $this->selectionsCollection
         );
-        $this->product->expects($this->any())->method('getSku')->willReturn(1);
         $this->productResourceCollection->expects($this->any())->method('addAttributeToFilter')->willReturnSelf();
         $this->productResourceCollection->expects($this->any())->method('getIterator')->will(
             $this->returnValue(new \ArrayIterator([$this->product]))
@@ -148,9 +133,6 @@ class RowCustomizerTest extends \PHPUnit\Framework\TestCase
      */
     public function testPrepareData()
     {
-        $scope = $this->getMockBuilder(\Magento\Framework\App\ScopeInterface::class)->getMockForAbstractClass();
-        $this->scopeResolver->expects($this->any())->method('getScope')
-            ->willReturn($scope);
         $result = $this->rowCustomizerMock->prepareData($this->productResourceCollection, [1]);
         $this->assertNotNull($result);
     }
@@ -178,9 +160,6 @@ class RowCustomizerTest extends \PHPUnit\Framework\TestCase
      */
     public function testAddData()
     {
-        $scope = $this->getMockBuilder(\Magento\Framework\App\ScopeInterface::class)->getMockForAbstractClass();
-        $this->scopeResolver->expects($this->any())->method('getScope')
-            ->willReturn($scope);
         $preparedData = $this->rowCustomizerMock->prepareData($this->productResourceCollection, [1]);
         $attributes = 'attribute=1,sku_type=1,attribute2="Text",price_type=1,price_view=1,weight_type=1,'
             . 'values=values,shipment_type=1,attribute3=One,Two,Three';

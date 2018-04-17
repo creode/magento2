@@ -163,8 +163,7 @@ class TaxRuleRepositoryTest extends \PHPUnit\Framework\TestCase
             ->willThrowException($exceptionObject);
         $this->taxRuleRegistry->expects($this->never())->method('registerTaxRule');
 
-        $this->expectException($exceptionName);
-        $this->expectExceptionMessage($exceptionMessage);
+        $this->expectException($exceptionName, $exceptionMessage);
         $this->model->save($rule);
     }
 

@@ -23,7 +23,12 @@ class InstallerFactoryTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValueMap($this->getReturnValueMap()));
 
         $log = $this->getMockForAbstractClass(\Magento\Framework\Setup\LoggerInterface::class);
-        $installerFactory = new InstallerFactory($serviceLocatorMock);
+        $resourceFactoryMock = $this->createMock(\Magento\Setup\Module\ResourceFactory::class);
+        $resourceFactoryMock
+            ->expects($this->any())
+            ->method('create')
+            ->will($this->returnValue($this->createMock(\Magento\Framework\App\ResourceConnection::class)));
+        $installerFactory = new InstallerFactory($serviceLocatorMock, $resourceFactoryMock);
         $installer = $installerFactory->create($log);
         $this->assertInstanceOf(\Magento\Setup\Model\Installer::class, $installer);
     }

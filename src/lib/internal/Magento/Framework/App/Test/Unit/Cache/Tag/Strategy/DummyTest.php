@@ -20,8 +20,7 @@ class DummyTest extends \PHPUnit\Framework\TestCase
 
     public function testGetTagsWithScalar()
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Provided argument is not an object');
+        $this->expectException(\InvalidArgumentException::class, 'Provided argument is not an object');
         $this->model->getTags('scalar');
     }
 
@@ -29,7 +28,7 @@ class DummyTest extends \PHPUnit\Framework\TestCase
     {
         $emptyArray = [];
 
-        $this->assertEquals($emptyArray, $this->model->getTags(new \stdClass));
+        $this->assertEquals($emptyArray, $this->model->getTags(new \StdClass));
 
         $identityInterface = $this->getMockForAbstractClass(\Magento\Framework\DataObject\IdentityInterface::class);
         $this->assertEquals($emptyArray, $this->model->getTags($identityInterface));

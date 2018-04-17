@@ -14,7 +14,6 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\EntityManager\MetadataPool;
 use Magento\Bundle\Model\ResourceModel\Selection\Collection\FilterApplier as SelectionCollectionFilterApplier;
-use Magento\Bundle\Model\ResourceModel\Selection\Collection as Selections;
 
 /**
  * Bundle Type Model
@@ -487,9 +486,7 @@ class Type extends \Magento\Catalog\Model\Product\Type\AbstractType
             \Magento\Catalog\Api\Data\ProductInterface::class
         );
 
-        /** @var Selections $selectionsCollection */
-        $selectionsCollection = $this->_bundleCollection->create();
-        $selectionsCollection
+        $selectionsCollection = $this->_bundleCollection->create()
             ->addAttributeToSelect($this->_config->getProductAttributes())
             ->addAttributeToSelect('tax_class_id') //used for calculation item taxes in Bundle with Dynamic Price
             ->setFlag('product_children', true)
@@ -590,7 +587,6 @@ class Type extends \Magento\Catalog\Model\Product\Type\AbstractType
         foreach ($this->getOptionsCollection($product) as $option) {
             $hasSalable = false;
 
-            /** @var Selections $selectionsCollection */
             $selectionsCollection = $this->_bundleCollection->create();
             $selectionsCollection->addAttributeToSelect('status');
             $selectionsCollection->addQuantityFilter();
@@ -859,9 +855,8 @@ class Type extends \Magento\Catalog\Model\Product\Type\AbstractType
 
         if (!$usedSelections || $usedSelectionsIds !== $selectionIds) {
             $storeId = $product->getStoreId();
-            /** @var Selections $usedSelections */
-            $usedSelections = $this->_bundleCollection->create();
-            $usedSelections
+            $usedSelections = $this->_bundleCollection
+                ->create()
                 ->addAttributeToSelect('*')
                 ->setFlag('product_children', true)
                 ->addStoreFilter($this->getStoreFilter($product))
@@ -1015,8 +1010,9 @@ class Type extends \Magento\Catalog\Model\Product\Type\AbstractType
         ];
         if ($aPosition == $bPosition) {
             return 0;
+        } else {
+            return $aPosition < $bPosition ? -1 : 1;
         }
-        return $aPosition < $bPosition ? -1 : 1;
     }
 
     /**

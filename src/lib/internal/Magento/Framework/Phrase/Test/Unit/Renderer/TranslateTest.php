@@ -91,8 +91,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
             ->method('getData')
             ->willThrowException($exception);
 
-        $this->expectException('Exception');
-        $this->expectExceptionMessage($message);
+        $this->expectException('Exception', $message);
         $this->_renderer->render(['text'], []);
     }
 }

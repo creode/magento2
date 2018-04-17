@@ -211,15 +211,12 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
 
         if (TESTS_WEB_API_ADAPTER == self::ADAPTER_SOAP) {
             if (isset($optionDataPost['title']) && empty($optionDataPost['title'])) {
-                $this->expectException('SoapFault');
-                $this->expectExceptionMessage('Missed values for option required fields');
+                $this->expectException('SoapFault', 'Missed values for option required fields');
             } else {
-                $this->expectException('SoapFault');
-                $this->expectExceptionMessage('Invalid option');
+                $this->expectException('SoapFault', 'Invalid option');
             }
         } else {
-            $this->expectException('Exception');
-            $this->expectExceptionMessage('', 400);
+            $this->expectException('Exception', '', 400);
         }
         $this->_webApiCall($serviceInfo, ['option' => $optionDataPost]);
     }
@@ -391,9 +388,8 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
      * @dataProvider optionNegativeUpdateDataProvider
      * @param array $optionData
      * @param string $message
-     * @param int $exceptionCode
      */
-    public function testUpdateNegative($optionData, $message, $exceptionCode)
+    public function testUpdateNegative($optionData, $message)
     {
         $this->_markTestAsRestOnly();
         $productSku = 'simple';
@@ -410,9 +406,7 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
             ],
         ];
 
-        $this->expectException('Exception');
-        $this->expectExceptionMessage($message);
-        $this->expectExceptionCode($exceptionCode);
+        $this->expectException('Exception', $message, 400);
         $this->_webApiCall($serviceInfo, ['option' => $optionData]);
     }
 

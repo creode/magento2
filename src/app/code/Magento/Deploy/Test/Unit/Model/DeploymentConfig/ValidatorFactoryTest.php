@@ -56,7 +56,7 @@ class ValidatorFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $className = 'className';
 
-        $stdMock = $this->getMockBuilder(\stdClass::class)
+        $stdMock = $this->getMockBuilder(\StdClass::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->objectManagerMock->expects($this->once())

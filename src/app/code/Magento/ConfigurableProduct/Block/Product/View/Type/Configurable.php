@@ -75,11 +75,6 @@ class Configurable extends \Magento\Catalog\Block\Product\View\AbstractView
     private $customerSession;
 
     /**
-     * @var \Magento\ConfigurableProduct\Model\Product\Type\Configurable\Variations\Prices
-     */
-    private $variationPrices;
-
-    /**
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Magento\Framework\Stdlib\ArrayUtils $arrayUtils
      * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
@@ -91,7 +86,6 @@ class Configurable extends \Magento\Catalog\Block\Product\View\AbstractView
      * @param array $data
      * @param Format|null $localeFormat
      * @param Session|null $customerSession
-     * @param \Magento\ConfigurableProduct\Model\Product\Type\Configurable\Variations\Prices|null $variationPrices
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -105,8 +99,7 @@ class Configurable extends \Magento\Catalog\Block\Product\View\AbstractView
         ConfigurableAttributeData $configurableAttributeData,
         array $data = [],
         Format $localeFormat = null,
-        Session $customerSession = null,
-        \Magento\ConfigurableProduct\Model\Product\Type\Configurable\Variations\Prices $variationPrices = null
+        Session $customerSession = null
     ) {
         $this->priceCurrency = $priceCurrency;
         $this->helper = $helper;
@@ -116,9 +109,6 @@ class Configurable extends \Magento\Catalog\Block\Product\View\AbstractView
         $this->configurableAttributeData = $configurableAttributeData;
         $this->localeFormat = $localeFormat ?: ObjectManager::getInstance()->get(Format::class);
         $this->customerSession = $customerSession ?: ObjectManager::getInstance()->get(Session::class);
-        $this->variationPrices = $variationPrices ?: ObjectManager::getInstance()->get(
-            \Magento\ConfigurableProduct\Model\Product\Type\Configurable\Variations\Prices::class
-        );
 
         parent::__construct(
             $context,
@@ -136,7 +126,7 @@ class Configurable extends \Magento\Catalog\Block\Product\View\AbstractView
     public function getCacheKeyInfo()
     {
         $parentData = parent::getCacheKeyInfo();
-        $parentData[] = $this->priceCurrency->getCurrency()->getCode();
+        $parentData[] = $this->priceCurrency->getCurrencySymbol();
         $parentData[] = $this->customerSession->getCustomerGroupId();
         return $parentData;
     }
@@ -188,7 +178,6 @@ class Configurable extends \Magento\Catalog\Block\Product\View\AbstractView
             }
             $this->setAllowProducts($products);
         }
-
         return $this->getData('allow_products');
     }
 
@@ -222,6 +211,9 @@ class Configurable extends \Magento\Catalog\Block\Product\View\AbstractView
         $store = $this->getCurrentStore();
         $currentProduct = $this->getProduct();
 
+        $regularPrice = $currentProduct->getPriceInfo()->getPrice('regular_price');
+        $finalPrice = $currentProduct->getPriceInfo()->getPrice('final_price');
+
         $options = $this->helper->getOptions($currentProduct, $this->getAllowProducts());
         $attributesData = $this->configurableAttributeData->getAttributesData($currentProduct, $options);
 
@@ -231,7 +223,17 @@ class Configurable extends \Magento\Catalog\Block\Product\View\AbstractView
             'currencyFormat' => $store->getCurrentCurrency()->getOutputFormat(),
             'optionPrices' => $this->getOptionPrices(),
             'priceFormat' => $this->localeFormat->getPriceFormat(),
-            'prices' => $this->variationPrices->getFormattedPrices($this->getProduct()->getPriceInfo()),
+            'prices' => [
+                'oldPrice' => [
+                    'amount' => $this->localeFormat->getNumber($regularPrice->getAmount()->getValue()),
+                ],
+                'basePrice' => [
+                    'amount' => $this->localeFormat->getNumber($finalPrice->getAmount()->getBaseAmount()),
+                ],
+                'finalPrice' => [
+                    'amount' => $this->localeFormat->getNumber($finalPrice->getAmount()->getValue()),
+                ],
+            ],
             'productId' => $currentProduct->getId(),
             'chooseText' => __('Choose an Option...'),
             'images' => $this->getOptionImages(),

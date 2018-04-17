@@ -75,8 +75,7 @@ class InterfaceGeneratorTest extends \PHPUnit\Framework\TestCase
     public function testGenerate($additionalMethodsData, $expectedException, $expectedExceptionMessage)
     {
         if ($expectedException) {
-            $this->expectException($expectedException);
-            $this->expectExceptionMessage($expectedExceptionMessage);
+            $this->expectException($expectedException, $expectedExceptionMessage);
         }
         $methodsData = array_merge_recursive($this->methodsData, $additionalMethodsData);
         $this->interfaceGenerator->setClassDocBlock($this->interfaceDocBlock)

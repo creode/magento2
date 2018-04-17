@@ -49,7 +49,7 @@ class Datetime extends \Magento\Eav\Model\Entity\Attribute\Backend\AbstractBacke
                 throw new \Magento\Framework\Exception\LocalizedException(__('Invalid date'));
             }
 
-            if ($value === null) {
+            if (is_null($value)) {
                 $value = $object->getData($attributeName);
             }
 

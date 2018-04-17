@@ -106,7 +106,7 @@ class CleanupFiles
                 $messages[] = $dirPath . $path;
                 try {
                     $dir->delete($path);
-                } catch (FileSystemException $e) {
+                } catch (FilesystemException $e) {
                     $messages[] = $e->getMessage();
                 }
             }

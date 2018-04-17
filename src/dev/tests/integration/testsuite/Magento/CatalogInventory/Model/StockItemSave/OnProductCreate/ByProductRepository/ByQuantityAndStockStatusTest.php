@@ -47,8 +47,8 @@ class ByQuantityAndStockStatusTest extends \PHPUnit\Framework\TestCase
     private $productData = [
         ProductInterface::TYPE_ID => Type::TYPE_SIMPLE,
         'website_ids' => [1],
-        ProductInterface::NAME => 'simpleForQuantityAndStockStatus',
-        ProductInterface::SKU => 'simpleForQuantityAndStockStatus',
+        ProductInterface::NAME => 'Simple',
+        ProductInterface::SKU => 'simple',
         ProductInterface::PRICE => 100,
         ProductInterface::EXTENSION_ATTRIBUTES_KEY => [],
     ];
@@ -59,7 +59,7 @@ class ByQuantityAndStockStatusTest extends \PHPUnit\Framework\TestCase
     private $stockItemData = [
         StockItemInterface::QTY => 555,
         StockItemInterface::MANAGE_STOCK => true,
-        StockItemInterface::IS_IN_STOCK => true,
+        StockItemInterface::IS_IN_STOCK => false,
     ];
 
     public function setUp()
@@ -90,7 +90,7 @@ class ByQuantityAndStockStatusTest extends \PHPUnit\Framework\TestCase
         $product->setQuantityAndStockStatus($this->stockItemData);
         $this->productRepository->save($product);
 
-        $this->stockItemDataChecker->checkStockItemData('simpleForQuantityAndStockStatus', $this->stockItemData);
+        $this->stockItemDataChecker->checkStockItemData('simple', $this->stockItemData);
     }
 
     /**
@@ -105,6 +105,6 @@ class ByQuantityAndStockStatusTest extends \PHPUnit\Framework\TestCase
         $product->setData('quantity_and_stock_status', $this->stockItemData);
         $this->productRepository->save($product);
 
-        $this->stockItemDataChecker->checkStockItemData('simpleForQuantityAndStockStatus', $this->stockItemData);
+        $this->stockItemDataChecker->checkStockItemData('simple', $this->stockItemData);
     }
 }

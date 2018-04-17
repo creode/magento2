@@ -85,8 +85,7 @@ class CompositeTest extends \PHPUnit\Framework\TestCase
             ->method('render')
             ->willThrowException($exception);
 
-        $this->expectException('Exception');
-        $this->expectExceptionMessage($message);
+        $this->expectException('Exception', $message);
         $this->object->render(['text'], []);
     }
 }

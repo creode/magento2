@@ -44,7 +44,7 @@ class ElementVisibilityCompositeTest extends \PHPUnit\Framework\TestCase
     public function testException()
     {
         $visibility = [
-            'stdClass' => new \stdClass()
+            'stdClass' => new \StdClass()
         ];
 
         new ElementVisibilityComposite($visibility);

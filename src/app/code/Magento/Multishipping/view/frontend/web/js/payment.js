@@ -63,12 +63,9 @@ define([
                 parentsDl = element.closest('dl');
 
             parentsDl.find('dt input:radio').prop('checked', false);
-            parentsDl.find('dd').addClass('no-display').end()
-                .find('.items').hide()
-                .find('[name^="payment["]').prop('disabled', true);
+            parentsDl.find('.items').hide().find('[name^="payment["]').prop('disabled', true);
             element.prop('checked', true).parent()
-                .next('dd').removeClass('no-display')
-                .find('.items').show().find('[name^="payment["]').prop('disabled', false);
+                .nextUntil('dt').find('.items').show().find('[name^="payment["]').prop('disabled', false);
         },
 
         /**
@@ -126,34 +123,15 @@ define([
         },
 
         /**
-         * Returns checked payment method.
-         *
-         * @private
-         */
-        _getSelectedPaymentMethod: function () {
-            return this.element.find('input[name=\'payment[method]\']:checked');
-        },
-
-        /**
          * Validate  before form submit
          * @private
          * @param {EventObject} e
          */
         _submitHandler: function (e) {
-            var currentMethod,
-                submitButton;
-
             e.preventDefault();
 
             if (this._validatePaymentMethod()) {
-                currentMethod = this._getSelectedPaymentMethod();
-                submitButton = currentMethod.parent().next('dd').find('button[type=submit]');
-
-                if (submitButton.length) {
-                    submitButton.first().trigger('click');
-                } else {
-                    this.element.submit();
-                }
+                this.element.submit();
             }
         }
     });

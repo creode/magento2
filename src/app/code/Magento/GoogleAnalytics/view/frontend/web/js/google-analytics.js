@@ -51,9 +51,10 @@ define([
             if (config.pageTrackingData.isAnonymizedIpActive) {
                 ga('set', 'anonymizeIp', true);
             }
+            ga('send', 'pageview' + config.pageTrackingData.optPageUrl);
 
             // Process orders data
-            if (config.ordersTrackingData.length) {
+            if (config.ordersTrackingData) {
                 ga('require', 'ec', 'ec.js');
 
                 //Set currency code
@@ -74,9 +75,6 @@ define([
                 }
 
                 ga('send', 'pageview');
-            }else{
-                // Process Data if not orders
-                ga('send', 'pageview' + config.pageTrackingData.optPageUrl);
             }
         }
     }

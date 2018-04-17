@@ -150,8 +150,7 @@ class CouponRepositoryTest extends \PHPUnit\Framework\TestCase
             $this->resource->expects($this->once())->method('save')->with($coupon)
                 ->willThrowException($exceptionObject);
         }
-        $this->expectException($exceptionName);
-        $this->expectExceptionMessage($exceptionMessage);
+        $this->expectException($exceptionName, $exceptionMessage);
         $this->model->save($coupon);
     }
 

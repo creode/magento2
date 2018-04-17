@@ -749,8 +749,7 @@ class Generator extends AbstractSchemaGenerator
     private function convertPathParams($uri)
     {
         $parts = explode('/', $uri);
-        $count = count($parts);
-        for ($i=0; $i < $count; $i++) {
+        for ($i=0; $i < count($parts); $i++) {
             if (strpos($parts[$i], ':') === 0) {
                 $parts[$i] = '{' . substr($parts[$i], 1) . '}';
             }

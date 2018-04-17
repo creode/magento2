@@ -6,10 +6,8 @@
 
 namespace Magento\CustomerImportExport\Test\Unit\Model\Import;
 
-use Magento\Customer\Model\ResourceModel\Address\Attribute as AddressAttribute;
-use Magento\CustomerImportExport\Model\ResourceModel\Import\Customer\Storage;
-use Magento\ImportExport\Model\Import\AbstractEntity;
 use Magento\CustomerImportExport\Model\Import\Address;
+use Magento\ImportExport\Model\Import\AbstractEntity;
 
 /**
  * Class AddressTest
@@ -114,12 +112,6 @@ class AddressTest extends \PHPUnit\Framework\TestCase
     protected $errorAggregator;
 
     /**
-     * @var AddressAttribute\Source\CountryWithWebsites
-     * |\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $countryWithWebsites;
-
-    /**
      * Init entity adapter model
      */
     protected function setUp()
@@ -133,14 +125,6 @@ class AddressTest extends \PHPUnit\Framework\TestCase
         $this->_storeManager->expects($this->any())
             ->method('getWebsites')
             ->will($this->returnCallback([$this, 'getWebsites']));
-        $this->countryWithWebsites = $this
-            ->getMockBuilder(AddressAttribute\Source\CountryWithWebsites::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->countryWithWebsites
-            ->expects($this->any())
-            ->method('getAllOptions')
-            ->willReturn([]);
         $this->_model = $this->_getModelMock();
         $this->errorAggregator = $this->createPartialMock(
             \Magento\ImportExport\Model\Import\ErrorProcessing\ProcessingErrorAggregator::class,
@@ -249,25 +233,29 @@ class AddressTest extends \PHPUnit\Framework\TestCase
      */
     protected function _createCustomerStorageMock()
     {
-        /** @var $customerStorage Storage|\PHPUnit_Framework_MockObject_MockObject */
-        $customerStorage = $this->createMock(Storage::class);
-        $customerStorage->expects($this->any())
-            ->method('getCustomerId')
-            ->willReturnCallback(
-                function ($email, $websiteId) {
-                    foreach ($this->_customers as $customerData) {
-                        if ($customerData['email'] == $email
-                            && $customerData['website_id'] == $websiteId
-                        ) {
-                            return $customerData['id'];
-                        }
-                    }
-
-                    return false;
-                }
-            );
-        $customerStorage->expects($this->any())->method('prepareCustomers');
-
+        $customerStorage = $this->createPartialMock(
+            \Magento\CustomerImportExport\Model\ResourceModel\Import\Customer\Storage::class,
+            ['load']
+        );
+        $resourceMock = $this->createPartialMock(
+            \Magento\Customer\Model\ResourceModel\Customer::class,
+            ['getIdFieldName']
+        );
+        $resourceMock->expects($this->any())->method('getIdFieldName')->will($this->returnValue('id'));
+        foreach ($this->_customers as $customerData) {
+            $data = [
+                'resource' => $resourceMock,
+                'data' => $customerData,
+                $this->createMock(\Magento\Customer\Model\Config\Share::class),
+                $this->createMock(\Magento\Customer\Model\AddressFactory::class),
+                $this->createMock(\Magento\Customer\Model\ResourceModel\Address\CollectionFactory::class),
+                $this->createMock(\Magento\Customer\Model\GroupFactory::class),
+                $this->createMock(\Magento\Customer\Model\AttributeFactory::class),
+            ];
+            /** @var $customer \Magento\Customer\Model\Customer */
+            $customer = $this->_objectManagerMock->getObject(\Magento\Customer\Model\Customer::class, $data);
+            $customerStorage->addCustomer($customer);
+        }
         return $customerStorage;
     }
 
@@ -349,6 +337,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
             'attributes' => [],
             'defaults' => [],
         ];
+
         // entity adapter mock
         $modelMock = $this->createPartialMock(
             \Magento\CustomerImportExport\Model\Import\Address::class,
@@ -360,12 +349,10 @@ class AddressTest extends \PHPUnit\Framework\TestCase
                 '_saveCustomerDefaults',
                 '_deleteAddressEntities',
                 '_mergeEntityAttributes',
-                'getErrorAggregator',
-                'getCustomerStorage',
-                'prepareCustomerData',
+                'getErrorAggregator'
             ]
         );
-        //Adding behaviours
+
         $availableBehaviors = new \ReflectionProperty($modelMock, '_availableBehaviors');
         $availableBehaviors->setAccessible(true);
         $availableBehaviors->setValue($modelMock, $this->_availableBehaviors);
@@ -373,13 +360,10 @@ class AddressTest extends \PHPUnit\Framework\TestCase
         // mock to imitate data source model
         $dataSourceMock = $this->createPartialMock(
             \Magento\ImportExport\Model\ResourceModel\Import\Data::class,
-            ['getNextBunch', '__wakeup', 'getIterator']
+            ['getNextBunch', '__wakeup']
         );
         $dataSourceMock->expects($this->at(0))->method('getNextBunch')->will($this->returnValue($customBehaviorRows));
         $dataSourceMock->expects($this->at(1))->method('getNextBunch')->will($this->returnValue(null));
-        $dataSourceMock->expects($this->any())
-            ->method('getIterator')
-            ->willReturn($this->getMockForAbstractClass(\Iterator::class));
 
         $dataSourceModel = new \ReflectionProperty(
             \Magento\CustomerImportExport\Model\Import\Address::class,
@@ -387,12 +371,15 @@ class AddressTest extends \PHPUnit\Framework\TestCase
         );
         $dataSourceModel->setAccessible(true);
         $dataSourceModel->setValue($modelMock, $dataSourceMock);
+
         // mock expects for entity adapter
         $modelMock->expects($this->any())->method('validateRow')->will($this->returnValue(true));
         $modelMock->expects($this->any())
             ->method('getErrorAggregator')
             ->will($this->returnValue($this->errorAggregator));
+
         $modelMock->expects($this->any())->method('_prepareDataForUpdate')->will($this->returnValue($updateResult));
+
         $modelMock->expects(
             $this->any()
         )->method(
@@ -400,8 +387,11 @@ class AddressTest extends \PHPUnit\Framework\TestCase
         )->will(
             $this->returnCallback([$this, 'validateSaveAddressEntities'])
         );
+
         $modelMock->expects($this->any())->method('_saveAddressAttributes')->will($this->returnValue($modelMock));
+
         $modelMock->expects($this->any())->method('_saveCustomerDefaults')->will($this->returnValue($modelMock));
+
         $modelMock->expects(
             $this->any()
         )->method(
@@ -409,10 +399,8 @@ class AddressTest extends \PHPUnit\Framework\TestCase
         )->will(
             $this->returnCallback([$this, 'validateDeleteAddressEntities'])
         );
+
         $modelMock->expects($this->any())->method('_mergeEntityAttributes')->will($this->returnValue([]));
-        $modelMock->expects($this->any())
-            ->method('getCustomerStorage')
-            ->willReturn($this->_createCustomerStorageMock());
 
         return $modelMock;
     }
@@ -445,8 +433,7 @@ class AddressTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\Magento\Customer\Model\ResourceModel\Address\Attribute\CollectionFactory::class),
             new \Magento\Framework\Stdlib\DateTime(),
             $this->createMock(\Magento\Customer\Model\Address\Validator\Postcode::class),
-            $this->_getModelDependencies(),
-            $this->countryWithWebsites
+            $this->_getModelDependencies()
         );
 
         $property = new \ReflectionProperty($modelMock, '_availableBehaviors');

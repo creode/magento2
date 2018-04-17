@@ -31,7 +31,7 @@ class ProductCategoryFilterTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $filterMock->expects($this->exactly(1))
+        $filterMock->expects($this->exactly(2))
             ->method('getConditionType')
             ->willReturn('condition');
         $filterMock->expects($this->once())
@@ -66,7 +66,7 @@ class ProductCategoryFilterTest extends \PHPUnit\Framework\TestCase
 
         $collectionMock->expects($this->once())
             ->method('addCategoriesFilter')
-            ->with(['in' => ['value']]);
+            ->with(['eq' => ['value']]);
 
         $this->assertTrue($this->model->apply($filterMock, $collectionMock));
     }

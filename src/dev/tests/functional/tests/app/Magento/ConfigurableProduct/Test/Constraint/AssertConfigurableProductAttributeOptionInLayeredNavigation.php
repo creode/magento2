@@ -6,11 +6,13 @@
 
 namespace Magento\ConfigurableProduct\Test\Constraint;
 
-use Magento\Catalog\Test\Page\Category\CatalogCategoryView;
-use Magento\Cms\Test\Page\CmsIndex;
-use Magento\Mtf\Constraint\AbstractConstraint;
 use Magento\Mtf\Fixture\FixtureFactory;
 use Magento\Mtf\Fixture\InjectableFixture;
+use Magento\Cms\Test\Page\CmsIndex;
+use Magento\Mtf\Constraint\AbstractConstraint;
+use Magento\Catalog\Test\Fixture\CatalogProductAttribute;
+use Magento\Catalog\Test\Page\Category\CatalogCategoryView;
+use Magento\ConfigurableProduct\Test\Fixture\ConfigurableProduct;
 
 /**
  * Check whether OOS product attribute options for configurable product are displayed on frontend in Layered navigation.
@@ -41,33 +43,25 @@ class AssertConfigurableProductAttributeOptionInLayeredNavigation extends Abstra
                 'data' => [
                     'category_ids' => [
                         'dataset' => null,
-                        'category' => $product->getDataFieldConfig('category_ids')['source']->getCategories()[0],
-                    ],
+                        'category' => $product->getDataFieldConfig('category_ids')['source']->getCategories()[0]
+                    ]
                 ],
             ]
         )->persist();
 
         $cmsIndex->open()->getTopmenu()->selectCategoryByName($product->getCategoryIds()[0]);
+        $filters = $catalogCategoryView->getLayeredNavigationBlock()->getFilterContents();
 
-        $attributesData = $product->hasData('configurable_attributes_data')
-            ? $product->getConfigurableAttributesData()['attributes_data']
-            : [];
-
-        $attributeData = !empty($attributesData) ? array_shift($attributesData) : [];
-        $frontendAttributeLabel = !empty($attributeData) && isset($attributeData['frontend_label'])
-            ? $attributeData['frontend_label']
-            : '';
-
-        $filters = $catalogCategoryView->getLayeredNavigationBlock()->getFilterContents($frontendAttributeLabel);
-
-        \PHPUnit\Framework\Assert::assertFalse(
+        \PHPUnit_Framework_Assert::assertFalse(
             in_array(strtoupper($outOfStockOption), $filters),
             'Out of Stock attribute option is present in layered navigation on category page.'
         );
     }
 
     /**
-     * @inheritdoc
+     * Return string representation of object.
+     *
+     * @return string
      */
     public function toString()
     {

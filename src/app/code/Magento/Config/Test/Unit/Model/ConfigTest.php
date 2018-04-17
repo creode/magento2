@@ -280,8 +280,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
     public function testSetDataByPathWrongDepth($path, $expectedException)
     {
         $expectedException = 'Allowed depth of configuration is 3 (<section>/<group>/<field>). ' . $expectedException;
-        $this->expectException('\UnexpectedValueException');
-        $this->expectExceptionMessage($expectedException);
+        $this->expectException('\UnexpectedValueException', $expectedException);
         $value = 'value';
         $this->_model->setDataByPath($path, $value);
     }
