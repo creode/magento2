@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+	<menu>
+		<add id="Rokanthemes_Productvideo::productvideo" title="Product Videos" module="Rokanthemes_Productvideo" sortOrder="62" parent="Rokanthemes_RokanBase::rokanbase" resource="Rokanthemes_Productvideo::productvideo"/>
+		<add id="Rokanthemes_Productvideo::productvideo_video" title="Video Manager" module="Rokanthemes_Productvideo" sortOrder="20" parent="Rokanthemes_Productvideo::productvideo" action="productvideo/video/index" resource="Rokanthemes_Productvideo::productvideo_video"/>
+		<add id="Rokanthemes_Productvideo::productvideo_productvideo" title="Product Manager" module="Rokanthemes_Productvideo" sortOrder="30" parent="Rokanthemes_Productvideo::productvideo" action="productvideo/productvideo/index" resource="Rokanthemes_Productvideo::productvideo_productvideo"/>
+		<add id="Rokanthemes_Productvideo::productvideo_configuration" title="Configuration" module="Rokanthemes_Productvideo" sortOrder="40" parent="Rokanthemes_Productvideo::productvideo" action="adminhtml/system_config/edit/section/productvideo" resource="Rokanthemes_Productvideo::productvideo_configuration"/>
+	</menu>
+</config>

@@ -1,0 +1,65 @@
+<div class="top-content-home">
+	<div class="section-services">
+		<div class="container">
+			<div class="support-footer-inner">
+				<div class="row">
+					<?php echo $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('section_services')->toHtml(); ?>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="onsale-bestseller">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12 col-md-7">
+					<div class="onsale-countdown">
+						<?php echo $block->getLayout()->createBlock('Rokanthemes\PriceCountdown\Block\Pricecountdown')->setTemplate('Rokanthemes_PriceCountdown::pricecountdown.phtml')->toHtml();?>
+					</div>
+				</div>
+				<div class="col-xs-12 col-md-5">
+					<div class="box-bestseller">
+						<?php echo $block->getLayout()->createBlock('Rokanthemes\BestsellerProduct\Block\Bestseller')->setTemplate('Rokanthemes_BestsellerProduct::bestseller.phtml')->toHtml();?>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="box-banner-middle">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('banner_middle')->toHtml();?>
+		</div>
+	</div>
+
+	<div class="section-product-tab">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Rokanthemes\ProductTab\Block\Producttab')->setTemplate('Rokanthemes_ProductTab::producttab.phtml')->toHtml();?> 
+		</div>
+	</div>
+	
+	<div class="section-category-tab category-tab-1">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('cat1_slider')->toHtml();?>
+		</div>
+	</div>
+
+	<div class="box-banner-middle">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('banner_middle2')->toHtml();?>
+		</div>
+	</div>
+	
+	<div class="section-category-tab category-tab-2">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('cat2_slider')->toHtml();?>
+		</div>
+	</div>
+
+	<div class="section-featured-categories">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('featured_categories')->toHtml(); ?>
+		</div>
+	</div>
+	
+</div>

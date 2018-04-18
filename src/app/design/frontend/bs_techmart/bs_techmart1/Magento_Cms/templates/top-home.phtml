@@ -1,0 +1,57 @@
+<div class="top-content-home">
+	<div class="onsale-countdown">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Rokanthemes\PriceCountdown\Block\Pricecountdown')->setTemplate('Rokanthemes_PriceCountdown::pricecountdown.phtml')->toHtml();?>
+		</div>
+	</div>
+	
+	<div class="section-category-tab category-tab-1">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('cat1_slider')->toHtml();?>
+		</div>
+	</div>
+	
+	<div class="box-banner-middle">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('banner_middle')->toHtml();?>
+		</div>
+	</div>
+
+	<div class="group-product">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4 col-xs-12">
+					<?php echo $block->getLayout()->createBlock('Rokanthemes\Newproduct\Block\Newproduct')->setTemplate('Rokanthemes_Newproduct::newproduct.phtml')->toHtml();?> 
+				</div>
+				<div class="col-md-4 col-xs-12">
+					<?php echo $block->getLayout()->createBlock('Rokanthemes\Onsaleproduct\Block\Onsaleproduct')->setTemplate('Rokanthemes_Onsaleproduct::onsaleproduct.phtml')->toHtml();?> 
+				</div>
+				<div class="col-md-4 col-xs-12">
+					<?php echo $block->getLayout()->createBlock('Rokanthemes\MostviewedProduct\Block\Mostviewed')->setTemplate('Rokanthemes_MostviewedProduct::mostviewed.phtml')->toHtml();?>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="box-bestseller">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Rokanthemes\BestsellerProduct\Block\Bestseller')->setTemplate('Rokanthemes_BestsellerProduct::bestseller.phtml')->toHtml();?>
+		</div>
+	</div>
+
+	<div class="section-featured-categories">
+		<div class="container">
+			<?php echo $block->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('featured_categories')->toHtml(); ?>
+		</div>
+	</div>
+	
+	<div class="section-services">
+		<div class="container">
+			<div class="support-footer-inner">
+				<div class="row">
+					<?php echo $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('section_services')->toHtml(); ?>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

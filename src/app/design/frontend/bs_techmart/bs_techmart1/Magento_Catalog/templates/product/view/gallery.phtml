@@ -1,0 +1,267 @@
+<?php
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/**
+ * Product media data template
+ *
+ * @var $block \Magento\Catalog\Block\Product\View\Gallery
+ */
+$images = $block->getGalleryImages();
+if(count($images) > 0)
+{
+	$mainImage = $images->getFirstItem();
+	foreach($images as $image)
+	{
+		if($block->isMainImage($image))
+		{
+			$mainImage = $image;
+			break;
+		}
+	}
+?>
+<?php 
+	$html_video = '';
+	$helper_product_video = $this->helper('Rokanthemes\Productvideo\Helper\Data');
+	if($helper_product_video->isEnabled()){
+		$videos = $helper_product_video->getVideoToProductFilter($block->getProduct()->getId());
+		if(count($videos) > 0){
+			foreach($videos as $val){
+				if($val['type'] == 'youtube'){
+					if(!$helper_product_video->videoAutoShowPupup()){
+						$html_video .= '<li class="small_image video-product-fixed-youtube video-product-fixed-gall">
+								<img style="height: 106px;" src="'.$val['image'].'" alt="'.$val['title'].'" />
+								<span class="img-fixed-productvideo" data-auto="'.$helper_product_video->videoAutoPlay().'" data-related="'.$helper_product_video->videoAutoRelated().'" data-code="'.$val['code'].'"></span>
+						</li>';
+					}
+					else{
+						$html_video .= '<li class="small_image video-product-fixed-youtube-pupup video-product-fixed-gall">
+							<img style="height: 106px;" src="'.$val['image'].'" alt="'.$val['title'].'" />
+							<span class="img-fixed-productvideo" data-auto="'.$helper_product_video->videoAutoPlay().'" data-related="'.$helper_product_video->videoAutoRelated().'" data-code="'.$val['code'].'"></span>
+							<div class="hide-title-productvideo">'.$val['title'].'</div>
+							<div class="hide-description-productvideo">'.$val['description'].'</div>
+						</li>';
+					}
+				}
+				else{
+					if(!$helper_product_video->videoAutoShowPupup()){
+						$html_video .= '<li class="small_image video-product-fixed-vimeo video-product-fixed-gall">
+							<img style="height: 106px;" src="'.$val['image'].'" alt="'.$val['title'].'" />
+							<span class="img-fixed-productvideo" data-auto="'.$helper_product_video->videoAutoPlay().'" data-related="'.$helper_product_video->videoAutoRelated().'" data-code="'.$val['code'].'"></span>
+						</li>';
+					}
+					else{
+						$html_video .= '<li class="small_image video-product-fixed-vimeo-pupup video-product-fixed-gall">
+							<img style="height: 106px;" src="'.$val['image'].'" alt="'.$val['title'].'" />
+							<span class="img-fixed-productvideo" data-auto="'.$helper_product_video->videoAutoPlay().'" data-related="'.$helper_product_video->videoAutoRelated().'" data-code="'.$val['code'].'"></span>
+							<div class="hide-title-productvideo">'.$val['title'].'</div>
+							<div class="hide-description-productvideo">'.$val['description'].'</div>
+						</li>';
+					}
+				}
+			}
+		}
+	}
+?>
+<div class="gallery-placeholder _block-content-loading" data-gallery-role="gallery-placeholder" id="gallery_<?php $block->getProduct()->getId(); ?>" >
+	<div class="product-slider-wrapper">
+		<div class="main-img-quickview">
+			<a href="<?php echo $mainImage->getData('large_image_url'); ?>" class="cloud-zoom" rel="transparentImage: 'data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==', useWrapper: false, showTitle: false, zoomWidth:'100', adjustY:0, adjustX:0">
+				<img src="<?php echo $mainImage->getData('medium_image_url'); ?>">
+			</a>
+		</div>
+	</div>
+	<div class="video-product-container-append"></div>
+	<div class="row">
+		<ul class="bxslider owl">
+		<?php 
+			if($helper_product_video->isBeforeImageFixed()){
+				echo $html_video;
+			}
+		?>
+		<?php foreach ($images as $_image) { ?>
+			<li class="small_image image_click_cloud_zoom <?php if($block->isMainImage($_image)) echo "active"; ?>"><img src="<?php echo $_image->getData('small_image_url'); ?>" data-href="<?php echo $_image->getData('large_image_url'); ?>" data-thumb-image="<?php echo $_image->getData('medium_image_url'); ?>"></li>
+		<?php } ?>
+		<?php 
+			if(!$helper_product_video->isBeforeImageFixed()){
+				echo $html_video;
+			}
+		?>
+		</ul>
+	</div>
+</div>
+<?php } ?>
+<div id="popup-modal-product-video-custom">
+    <div class="append-iframe"></div>
+	<div class="append-desc"></div>
+</div>
+<script>
+require([
+		'jquery',
+		'Magento_Ui/js/modal/modal',
+		'mage/mage',
+		'quickview/cloudzoom',
+		'rokanthemes/owl'
+	], function ($, modal) {
+	jQuery(document).ready(function() {
+		jQuery('#gallery_<?php $block->getProduct()->getId(); ?> .cloud-zoom, #gallery_<?php $block->getProduct()->getId(); ?> .cloud-zoom-gallery').CloudZoom({
+			adjustX: 0,
+			adjustY: 0
+		});
+		$(document).on('click','#gallery_<?php $block->getProduct()->getId(); ?> .owl .image_click_cloud_zoom', function(){  
+			$('#gallery_<?php $block->getProduct()->getId(); ?> .owl .image_click_cloud_zoom').removeClass('active');
+			$('#gallery_<?php $block->getProduct()->getId(); ?> .owl .video-product-fixed-gall').removeClass('active');
+			$('.video-product-container-append').html('');
+			$('.product-slider-wrapper').show();
+			$(this).addClass('active');
+			var currentImg = $(this).children('img');
+			jQuery('#gallery_<?php $block->getProduct()->getId(); ?> a.cloud-zoom').attr('href', currentImg.attr('data-href'));
+			jQuery('#gallery_<?php $block->getProduct()->getId(); ?> a.cloud-zoom img').attr('src', currentImg.attr('data-thumb-image'));
+			$('.cloud-zoom, .cloud-zoom-gallery').CloudZoom();
+		});
+		$('#gallery_<?php $block->getProduct()->getId(); ?> .owl').owlCarousel({
+			items: 4,
+			nav: true,
+			rewind: true,
+			dots: false,
+			autoplay: false,
+			lazyLoad: true,
+			autoplayHoverPause : true,
+			responsive : {
+			    0 : {
+			       items:1,
+			    },
+			    480 : {
+			       items:4,
+			    },
+			    768 : {
+			       items:3,
+			    },
+			    991 : {
+			       items:4,
+			    }
+			}
+		});
+		
+		$('.video-product-fixed-youtube').click(function(){
+			$('#gallery_<?php $block->getProduct()->getId(); ?> .owl .video-product-fixed-gall').removeClass('active');
+			$('#gallery_<?php $block->getProduct()->getId(); ?> .owl .image_click_cloud_zoom').removeClass('active');
+			$(this).addClass('active');
+			var data_code = $(this).find('.img-fixed-productvideo').attr('data-code');
+			var data_auto = $(this).find('.img-fixed-productvideo').attr('data-auto');
+			var data_related = $(this).find('.img-fixed-productvideo').attr('data-related');
+			var link_auto = '';
+			if(data_auto == '1'){
+				link_auto = '?autoplay=1';
+			}
+			if(link_auto == ''){
+				link_auto = '?rel='+data_related;
+			}
+			else{
+				link_auto += '&rel='+data_related;
+			}
+			var tmp = '<div class="video-productvideo-container"><iframe width="560" height="315" src="https://www.youtube.com/embed/'+data_code+link_auto+'" frameborder="0" allowfullscreen></iframe></div>';
+			$('.video-product-container-append').html(tmp);
+			$('.product-slider-wrapper').hide();
+		});
+		
+		$('.video-product-fixed-vimeo').click(function(){
+			$('#gallery_<?php $block->getProduct()->getId(); ?> .owl .video-product-fixed-gall').removeClass('active');
+			$('#gallery_<?php $block->getProduct()->getId(); ?> .owl .image_click_cloud_zoom').removeClass('active');
+			$(this).addClass('active');
+			var data_code = $(this).find('.img-fixed-productvideo').attr('data-code');
+			var data_auto = $(this).find('.img-fixed-productvideo').attr('data-auto');
+			var data_related = $(this).find('.img-fixed-productvideo').attr('data-related');
+			var link_auto = '';
+			if(data_auto == '1'){
+				link_auto = '?autoplay=1';
+			}
+			var tmp = '<div class="video-productvideo-container"><iframe src="https://player.vimeo.com/video/'+data_code+'?portrait=0'+link_auto+'" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>';
+			$('.video-product-container-append').html(tmp);
+			$('.product-slider-wrapper').hide();
+		});
+		
+		$('.video-product-fixed-youtube-pupup').click(function(){
+			var data_code = $(this).find('.img-fixed-productvideo').attr('data-code');
+			var data_auto = $(this).find('.img-fixed-productvideo').attr('data-auto');
+			var data_related = $(this).find('.img-fixed-productvideo').attr('data-related');
+			var link_auto = '';
+			if(data_auto == '1'){
+				link_auto = '?autoplay=1';
+			}
+			if(link_auto == ''){
+				link_auto = '?rel='+data_related;
+			}
+			else{
+				link_auto += '&rel='+data_related;
+			}
+			var tmp = '<div class="video-productvideo-container"><iframe width="560" height="315" src="https://www.youtube.com/embed/'+data_code+link_auto+'" frameborder="0" allowfullscreen></iframe></div>';
+			var title_ = $(this).closest('li').find('.hide-title-productvideo').html();
+			var desc_ = $(this).closest('li').find('.hide-description-productvideo').html();
+			
+			var options = {
+                type: 'popup',
+                responsive: true,
+                innerScroll: false,
+                title: title_,
+				closed: function() {
+					$('#popup-modal-product-video-custom .append-desc').html('');
+					$('#popup-modal-product-video-custom .append-iframe').html('');
+					$('#gallery_<?php $block->getProduct()->getId(); ?> .owl .video-product-fixed-gall').removeClass('active');
+				},
+                buttons: [{
+                    text: $.mage.__('Close'),
+                    class: '',
+                    click: function () {
+                        this.closeModal();
+                    }
+                }]
+            };
+			$('#popup-modal-product-video-custom .append-desc').html(desc_);
+			$('#popup-modal-product-video-custom .append-iframe').html(tmp);
+            var popup = modal(options, $('#popup-modal-product-video-custom'));
+            $('#popup-modal-product-video-custom').modal('openModal');
+		});
+		
+		$('.video-product-fixed-vimeo-pupup').click(function(){
+			var data_code = $(this).find('.img-fixed-productvideo').attr('data-code');
+			var data_auto = $(this).find('.img-fixed-productvideo').attr('data-auto');
+			var data_related = $(this).find('.img-fixed-productvideo').attr('data-related');
+			var link_auto = '';
+			if(data_auto == '1'){
+				link_auto = '?autoplay=1';
+			}
+			var tmp = '<div class="video-productvideo-container"><iframe src="https://player.vimeo.com/video/'+data_code+'?portrait=0'+link_auto+'" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>';
+			var title_ = $(this).closest('li').find('.hide-title-productvideo').html();
+			var desc_ = $(this).closest('li').find('.hide-description-productvideo').html();
+			
+			var options = {
+                type: 'popup',
+                responsive: true,
+                innerScroll: false,
+                title: title_,
+				closed: function() {
+					$('#popup-modal-product-video-custom .append-desc').html('');
+					$('#popup-modal-product-video-custom .append-iframe').html('');
+					$('#gallery_<?php $block->getProduct()->getId(); ?> .owl .video-product-fixed-gall').removeClass('active');
+				},
+                buttons: [{
+                    text: $.mage.__('Close'),
+                    class: '',
+                    click: function () {
+                        this.closeModal();
+                    }
+                }]
+            };
+			$('#popup-modal-product-video-custom .append-desc').html(desc_);
+			$('#popup-modal-product-video-custom .append-iframe').html(tmp);
+            var popup = modal(options, $('#popup-modal-product-video-custom'));
+            $('#popup-modal-product-video-custom').modal('openModal');
+		});
+	});
+});
+</script>

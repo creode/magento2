@@ -1,0 +1,23 @@
+.video-product-container {
+	position:relative;
+	padding-bottom:56.25%;
+	padding-top:30px;
+	height:0;
+	overflow:hidden;
+	margin: 0;
+}
+.video-product-container iframe, .video-product-container object, .video-product-container embed {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}
+.field-default_preview_video_live div.control-value{display: none;}
+.field-default_preview_video_live div.preview_video{width: 100%; height: 315px;}
+.action-primary-product-video{background-color: #ba4000; color: #fff; text-decoration: none;}
+#append-video-product-live .removed-fixed-ajax td{cursor: pointer; border-bottom: .1rem dashed #d6d6d6;}
+#append-video-product-live .removed-fixed-ajax td input{display: none;}
+#append-video-product-live .removed-fixed-ajax .selectedVideo td{cursor: pointer; background-color: #ba4000; color: #fff;}
+.selectedVideo .tick-icon{background-image: url(../images/tick-icon.png); width: 30px; height: 30px; display: inline-block; float: right;}
+#append-ajax-result-fixed td{border-bottom: .1rem dashed #d6d6d6;}

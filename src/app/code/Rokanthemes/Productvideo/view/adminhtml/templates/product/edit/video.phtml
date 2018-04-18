@@ -1,0 +1,210 @@
+<div class="admin__field-complex">
+	<div class="admin__field-complex-elements">
+		<button type="button" id="opendModelFixed" class="action-secondary">
+			<span><?php echo __('Add Video'); ?></span>
+		</button>
+	</div>
+</div>
+<?php 
+	$product_added_videos = $this->getListProductVideos();
+	if(count($product_added_videos) == 0){
+		$id_pr_ = array(-1);
+	}
+	else{
+		$id_pr_ = array();
+		foreach($product_added_videos as $v_p){
+			$id_pr_[] = $v_p->getVideoId();
+		}
+	}
+	
+?>
+<div class="admin__field admin__field-wide _no-header">
+    <div class="admin__field-control">
+        <div class="admin__control-table-wrapper">
+            <table class="admin__dynamic-rows data-grid">
+				<thead>
+					<tr>
+						<th class="data-grid-th" ><?php echo __('ID'); ?></th>
+						<th class="data-grid-th"><?php echo __('Image'); ?></th>
+						<th class="data-grid-th"><?php echo __('Title'); ?></th>
+						<th class="data-grid-th"><?php echo __('Type'); ?></th>
+						<th class="data-grid-th"><?php echo __('Status'); ?></th>
+						<th class="data-grid-th"><?php echo __('Action'); ?></th>
+					</tr>
+                </thead>
+                <tbody id="append-ajax-result-fixed">
+					<?php echo $this->helper('Rokanthemes\Productvideo\Helper\Data')->getHtmlItem($product_added_videos); ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<?php 
+	$product_vdeos = $this->getListProductNoAssVideos();
+?>
+<div id="popup-mpdal">
+   <?php if(count($product_vdeos) == 0){ ?>
+		<?php echo __('You have no videos. Please click %1 add more videos', '<a href="'.$this->getUrl('productvideo/video/index').'">here</a>'); ?>
+   <?php }else{ ?>
+   <div id="append-video-product-live">
+		<form method="POST" action="<?php echo $this->getUrl('productvideo/productvideo/save'); ?>">
+			<input type="hidden" name="product_id" value="<?php echo $this->getProduct()->getId(); ?>">
+			<table class="admin__dynamic-rows data-grid">
+				<thead>
+					<tr>
+						<th class="data-grid-th" ><?php echo __('ID'); ?></th>
+						<th class="data-grid-th"><?php echo __('Image'); ?></th>
+						<th class="data-grid-th"><?php echo __('Title'); ?></th>
+						<th class="data-grid-th"><?php echo __('Type'); ?></th>
+						<th class="data-grid-th"><?php echo __('Status'); ?></th>
+					</tr>
+				</thead>
+				<tbody class="removed-fixed-ajax">
+					<?php 
+					$i = 0;
+					foreach($product_vdeos as $val_video){
+						if(in_array($val_video->getVideoId(), $id_pr_)){
+							continue;
+						}
+						$status = '';
+						if($val_video->getStatus()){
+							$status = __('Enabled');
+						}
+						else{
+							$status = __('Disable');
+						}
+						echo '<tr class="data-row">
+								<td class="data-grid-draggable-row-cell"><input type="checkbox" name="videos[]" value="'.$val_video->getVideoId().'"> '.$val_video->getVideoId().'</td>
+								<td class="data-grid-draggable-row-cell"><img src="'.$val_video->getImage().'" style="width: 100px" /></td>
+								<td class="data-grid-draggable-row-cell">'.$val_video->getTitle().'</td>
+								<td class="data-grid-draggable-row-cell">'.$val_video->getType().'</td>
+								<td class="data-grid-draggable-row-cell">'.$status.' <span class="tick-icon"></span></td>
+							</tr>';
+						$i ++;
+					}
+					?>
+				</tbody>
+			</table>
+		</form>
+   </div>
+   <?php } ?>
+</div>
+<?php if(count($product_vdeos) == 0){ ?>
+	<script>
+		require(
+			[
+				'jquery',
+				'Magento_Ui/js/modal/modal'
+			],
+			function(
+				$,
+				modal
+			) {
+				var options = {
+					type: 'popup',
+					responsive: true,
+					innerScroll: true,
+					title: 'Product Videos',
+					buttons: [{
+						text: $.mage.__('Close'),
+						class: '',
+						click: function () {
+							this.closeModal();
+						}
+					}]
+				};
+
+				var popup = modal(options, $('#popup-mpdal'));
+				$('#opendModelFixed').click(function(){
+					$('#popup-mpdal').modal('openModal');
+				});
+			}
+		);
+	</script>
+<?php }else{ ?>
+	<script>
+		require(
+			[
+				'jquery',
+				'Magento_Ui/js/modal/modal',
+				'Magento_Ui/js/modal/alert'
+			],
+			function(
+				$,
+				modal,
+				alert
+			) {
+				var options = {
+					type: 'popup',
+					responsive: true,
+					innerScroll: true,
+					title: 'Product Videos',
+					buttons: [
+					{
+						text: $.mage.__('Cancel'),
+						class: '',
+						click: function () {
+							this.closeModal();
+						}
+					},
+					{
+						text: $.mage.__('Add Selected Videos'),
+						class: 'action-primary-product-video',
+						click: function () {
+							if($('.selectedVideo').length > 0){
+								var datastring = $("#append-video-product-live form").serialize();
+								$.ajax({
+									showLoader: true,
+									url: $("#append-video-product-live form").attr('action'),
+									data: datastring,
+									type: "POST",
+									dataType: 'json'
+								}).done(function (data) {
+									$('#append-ajax-result-fixed').append(data.html);
+									$('#append-video-product-live .selectedVideo').remove();
+									popup.closeModal();
+								});
+							}
+							else{
+								alert({
+									title: 'Warning',
+									content: 'Please select video',
+									actions: {
+										always: function(){}
+									}
+								});
+							}
+						}
+					}]
+				};
+
+				var popup = modal(options, $('#popup-mpdal'));
+				$('#opendModelFixed').click(function(){
+					$('#popup-mpdal').modal('openModal');
+				});
+				$('#append-video-product-live tr').click(function(){
+					if($(this).hasClass('selectedVideo')){
+						$(this).removeClass('selectedVideo');
+						$(this).find('input').prop('checked', false);
+					}
+					else{
+						$(this).addClass('selectedVideo');
+						$(this).find('input').prop('checked', true);
+					}
+				});
+				$(document).on('click', '.delete-video-ajax', function (event) {
+					var this_ = $(this);
+					$.ajax({
+						showLoader: true,
+						url: '<?php echo $this->getUrl('productvideo/productvideo/delete') ;?>',
+						data: {id: this_.attr('data-id')},
+						type: "GET",
+						dataType: 'json'
+					}).done(function (data) {
+						this_.closest('tr').remove();
+					});
+				});
+			}
+		);
+	</script>
+<?php } ?>

@@ -1,0 +1,42 @@
+body .video-product-fixed-gall:after {
+    background: url(../images/thumbnail-video.png) no-repeat center;
+    bottom: 0;
+    content: '';
+    height: 46px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 2px;
+    width: 46px;
+}
+.gallery-placeholder .row li.active:after{
+    background: none;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+.video-product-fixed-gall span, .video-product-fixed-gall div{
+    display: none;
+}
+#popup-modal-product-video-custom{
+    display: none;
+}
+#popup-modal-product-video-custom .append-desc{
+    padding: 20px 0;
+}
+.video-productvideo-container {
+    position:relative;
+    padding-bottom:56.25%;
+    padding-top:30px;
+    height:0;
+    overflow:hidden;
+    margin: 0 0 20px;
+}
+.video-productvideo-container iframe, .video-productvideo-container object, .video-productvideo-container embed {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+}

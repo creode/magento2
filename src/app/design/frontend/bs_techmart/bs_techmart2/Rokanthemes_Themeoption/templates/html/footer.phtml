@@ -1,0 +1,31 @@
+<div class="footer-container">
+	<div class="footer-static-container">
+		<div class="container">
+			<div class="footer-static">
+				<div class="row">
+					<?php echo $this->getChildHtml("footer_static"); ?>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="footer-bottom">
+		<div class="container">
+			<div class="footer-bottom-inner">
+				<div class="row">
+					<div class="col-md-6 col-sm-6 col-xs-12">
+						<?php echo $this->getChildHtml("copyright"); ?>
+					</div>
+					<div class="col-md-6 col-sm-6 col-xs-12 payment-logo">
+						<?php echo $this->getChildHtml("payment"); ?>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="back-top" class="hidden-xs"><i class="fa fa-angle-up"></i></div>
+<script>
+	window.onload = function () {
+		document.body.className += " preloaded";
+	}
+</script>

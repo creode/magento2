@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <productvideo>
+            <general>
+                <enabled_module>1</enabled_module>
+            </general>
+			<video>
+                <auto_play>1</auto_play>
+                <auto_restart>1</auto_restart>
+                <show_related>1</show_related>
+                <show_pupup>1</show_pupup>
+            </video>			
+            <integration>
+				<thumbnails_position>after</thumbnails_position>
+            </integration>	
+        </productvideo>
+    </default>
+</config>

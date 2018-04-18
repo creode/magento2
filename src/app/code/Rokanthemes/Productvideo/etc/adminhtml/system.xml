@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="productvideo" translate="label" type="text"  showInDefault="1" showInWebsite="1" showInStore="1">
+			<label>Configuration Product Videos</label>
+			<tab>rokanthemes</tab>
+            <resource>Rokanthemes_Productvideo::productvideo_configuration</resource>
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+                <field id="enabled_module" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable module</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="video" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Video</label>
+                <field id="auto_play" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto Start Base Video</label>
+					<comment><![CDATA[YES - autostart base video<br />NO - play video after click button play]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+				<field id="auto_restart" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto Restart Video</label>
+					<comment><![CDATA[YES - auto restart video<br />NO - no auto restart video]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+				<field id="show_related" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Related Videos</label>
+					<comment><![CDATA[Show related videos after the end of the original video]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+				<field id="show_pupup" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Pupup Videos</label>
+					<comment><![CDATA[Show pupup videos after click thumbnail]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+			<group id="integration" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Integration</label>
+                <field id="thumbnails_position" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto Play Video After Load</label>
+					<comment><![CDATA[Before - show videos before images<br />After - show videos after images]]></comment>
+                    <source_model>Rokanthemes\Productvideo\Model\Config\Source\Position</source_model>
+                </field>
+            </group>
+	    </section>
+    </system>
+</config>
